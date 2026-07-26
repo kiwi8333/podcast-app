@@ -1,0 +1,50 @@
+.bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #1a1a1a;
+  color: #fff;
+  border-top: 1px solid #333;
+  z-index: 100;
+}
+
+.artwork {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.info {
+  min-width: 120px;
+  max-width: 220px;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.podcastTitle {
+  font-size: 12px;
+  color: #aaa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.audio {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+}
