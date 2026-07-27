@@ -1,0 +1,75 @@
+.back {
+  color: var(--muted-text);
+  font-size: var(--font-size-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.back:hover {
+  color: var(--foreground);
+}
+
+.header {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  margin: var(--space-4) 0 var(--space-5);
+}
+
+.artwork {
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  margin: 0;
+}
+
+.episodeCount {
+  color: var(--muted-text);
+  margin-top: var(--space-1);
+  font-size: var(--font-size-sm);
+}
+
+.subscribeButton {
+  height: 36px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-weight: 600;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+
+.subscribeButton:hover {
+  background: var(--border);
+}
+
+.subscribeButton:active {
+  transform: scale(0.97);
+}
+
+.subscribeButtonActive {
+  border: none;
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.status {
+  color: var(--muted-text);
+  font-size: var(--font-size-sm);
+}

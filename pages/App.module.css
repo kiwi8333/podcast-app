@@ -1,0 +1,39 @@
+.shell {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4) 100px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 700;
+  font-size: var(--font-size-md);
+}
+
+.navLink {
+  font-size: var(--font-size-sm);
+  color: var(--muted-text);
+  transition: color 0.15s ease;
+}
+
+.navLink:hover {
+  color: var(--foreground);
+}
+
+.page {
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+.pageTransitioning {
+  opacity: 0;
+}

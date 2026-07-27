@@ -1,0 +1,111 @@
+.row {
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.info {
+  min-width: 0;
+}
+
+.title {
+  font-weight: 600;
+  font-size: var(--font-size-md);
+}
+
+.date {
+  font-size: var(--font-size-xs);
+  color: var(--muted-text);
+  margin-top: var(--space-1);
+}
+
+.description {
+  font-size: var(--font-size-sm);
+  color: var(--muted-text);
+  margin: var(--space-2) 0 0;
+  max-width: 600px;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  height: 36px;
+}
+
+.iconButton {
+  height: 36px;
+  width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+
+.iconButton:hover {
+  background: var(--border);
+}
+
+.iconButton:active {
+  transform: scale(0.94);
+}
+
+.iconButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.iconButtonDownloaded {
+  color: #34c759;
+  border-color: #34c759;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.playButton {
+  height: 36px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--accent);
+  color: var(--accent-foreground);
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.playButton:hover {
+  opacity: 0.85;
+}
+
+.playButton:active {
+  transform: scale(0.97);
+}
+
+.playButtonPlaying {
+  background: var(--muted-text);
+}
+
+.playButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

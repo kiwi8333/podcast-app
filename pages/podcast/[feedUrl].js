@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { ArrowLeft, Star } from "lucide-react";
 import EpisodeList from "@/components/EpisodeList";
+import EpisodeRowSkeleton from "@/components/EpisodeRowSkeleton";
+import Skeleton from "@/components/Skeleton";
 import { useFavorite } from "@/lib/favorites";
+import styles from "../Podcast.module.css";
 
 export default function PodcastPage() {
   const router = useRouter();
@@ -33,45 +37,48 @@ export default function PodcastPage() {
       .catch(() => setStatus("error"));
   }, [feedUrl]);
 
-  if (status === "loading") return <p>Loading episodes...</p>;
-  if (status === "error") return <p>Couldn't load this podcast. Try another one.</p>;
+  if (status === "loading") {
+    return (
+      <div>
+        <div className={styles.header}>
+          <Skeleton width={80} height={80} />
+          <div className={styles.meta}>
+            <Skeleton width="50%" height={22} style={{ marginBottom: 8 }} />
+            <Skeleton width="25%" height={14} />
+          </div>
+        </div>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <EpisodeRowSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
+  if (status === "error")
+    return <p className={styles.status}>Couldn't load this podcast. Try another one.</p>;
   if (!feed) return null;
 
   return (
     <div>
-      <Link href="/" style={{ color: "#666", fontSize: 14 }}>
-        &larr; Back to search
+      <Link href="/" className={styles.back}>
+        <ArrowLeft size={14} />
+        Back to search
       </Link>
-      <div style={{ display: "flex", gap: 16, alignItems: "center", margin: "16px 0" }}>
+      <div className={styles.header}>
         {feed.image && (
-          <img
-            src={feed.image}
-            alt=""
-            width={80}
-            height={80}
-            style={{ borderRadius: 8, objectFit: "cover" }}
-          />
+          <img src={feed.image} alt="" width={80} height={80} className={styles.artwork} />
         )}
-        <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 22, margin: 0 }}>{feed.title}</h1>
-          <p style={{ color: "#666", margin: "4px 0 0", fontSize: 14 }}>
-            {feed.episodes.length} episodes
-          </p>
+        <div className={styles.meta}>
+          <h1 className={styles.title}>{feed.title}</h1>
+          <p className={styles.episodeCount}>{feed.episodes.length} episodes</p>
         </div>
         <button
           onClick={toggleFavorited}
-          style={{
-            height: 36,
-            padding: "0 14px",
-            borderRadius: 6,
-            border: favorited ? "none" : "1px solid #ccc",
-            background: favorited ? "#1a1a1a" : "#fff",
-            color: favorited ? "#fff" : "#1a1a1a",
-            cursor: "pointer",
-            flexShrink: 0,
-          }}
+          className={`${styles.subscribeButton} ${
+            favorited ? styles.subscribeButtonActive : ""
+          }`}
         >
-          {favorited ? "★ Subscribed" : "☆ Subscribe"}
+          <Star size={16} fill={favorited ? "currentColor" : "none"} />
+          {favorited ? "Subscribed" : "Subscribe"}
         </button>
       </div>
       <EpisodeList episodes={feed.episodes} podcastTitle={feed.title} artwork={feed.image} />

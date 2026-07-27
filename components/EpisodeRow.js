@@ -1,5 +1,7 @@
+import { Download, Check, Loader2, Play } from "lucide-react";
 import { usePlayer } from "./Player/PlayerContext";
 import { useDownloadStatus } from "@/lib/downloads";
+import styles from "./EpisodeRow.module.css";
 
 export default function EpisodeRow({ episode, podcastTitle, artwork }) {
   const { playEpisode, nowPlaying } = usePlayer();
@@ -30,63 +32,37 @@ export default function EpisodeRow({ episode, podcastTitle, artwork }) {
   }
 
   return (
-    <div
-      style={{
-        padding: "12px 0",
-        borderBottom: "1px solid #eee",
-        display: "flex",
-        justifyContent: "space-between",
-        gap: 12,
-      }}
-    >
-      <div style={{ minWidth: 0 }}>
-        <div style={{ fontWeight: 600 }}>{episode.title}</div>
-        <div style={{ fontSize: 13, color: "#888" }}>
+    <div className={styles.row}>
+      <div className={styles.info}>
+        <div className={styles.title}>{episode.title}</div>
+        <div className={styles.date}>
           {episode.pubDate ? new Date(episode.pubDate).toLocaleDateString() : ""}
         </div>
-        {episode.description && (
-          <p
-            style={{
-              fontSize: 14,
-              color: "#555",
-              margin: "6px 0 0",
-              maxWidth: 600,
-            }}
-          >
-            {episode.description}
-          </p>
-        )}
+        {episode.description && <p className={styles.description}>{episode.description}</p>}
       </div>
-      <div style={{ display: "flex", gap: 8, flexShrink: 0, height: 36 }}>
+      <div className={styles.actions}>
         <button
           onClick={handleDownloadClick}
           disabled={!episode.audioUrl || downloadStatus === "downloading"}
           title={downloadStatus === "downloaded" ? "Remove download" : "Download for offline"}
-          style={{
-            height: 36,
-            width: 36,
-            borderRadius: 6,
-            border: "1px solid #ccc",
-            background: downloadStatus === "downloaded" ? "#e8f5e9" : "#fff",
-            cursor: episode.audioUrl ? "pointer" : "not-allowed",
-            fontSize: 16,
-          }}
+          className={`${styles.iconButton} ${
+            downloadStatus === "downloaded" ? styles.iconButtonDownloaded : ""
+          }`}
         >
-          {downloadStatus === "downloaded" ? "✓" : downloadStatus === "downloading" ? "…" : "⬇"}
+          {downloadStatus === "downloaded" ? (
+            <Check size={18} />
+          ) : downloadStatus === "downloading" ? (
+            <Loader2 size={18} className={styles.spin} />
+          ) : (
+            <Download size={18} />
+          )}
         </button>
         <button
           onClick={handlePlay}
           disabled={!episode.audioUrl}
-          style={{
-            height: 36,
-            padding: "0 14px",
-            borderRadius: 6,
-            border: "none",
-            background: isPlaying ? "#555" : "#1a1a1a",
-            color: "#fff",
-            cursor: episode.audioUrl ? "pointer" : "not-allowed",
-          }}
+          className={`${styles.playButton} ${isPlaying ? styles.playButtonPlaying : ""}`}
         >
+          <Play size={16} fill="currentColor" />
           {isPlaying ? "Playing" : "Play"}
         </button>
       </div>
