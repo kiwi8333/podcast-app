@@ -1,4 +1,5 @@
 import { Readable } from "stream";
+import { assertPublicHttpUrl } from "@/lib/ssrfGuard";
 
 export const config = {
   api: {
@@ -11,6 +12,13 @@ export default async function handler(req, res) {
 
   if (!url) {
     res.status(400).json({ error: "Missing url parameter" });
+    return;
+  }
+
+  try {
+    await assertPublicHttpUrl(url);
+  } catch {
+    res.status(400).json({ error: "Invalid audio URL" });
     return;
   }
 

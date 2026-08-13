@@ -1,10 +1,18 @@
 import { parseFeed } from "@/lib/rssParser";
+import { assertPublicHttpUrl } from "@/lib/ssrfGuard";
 
 export default async function handler(req, res) {
   const { url } = req.query;
 
   if (!url) {
     res.status(400).json({ error: "Missing url parameter" });
+    return;
+  }
+
+  try {
+    await assertPublicHttpUrl(url);
+  } catch {
+    res.status(400).json({ error: "Invalid feed URL" });
     return;
   }
 
