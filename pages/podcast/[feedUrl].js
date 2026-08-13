@@ -24,6 +24,8 @@ export default function PodcastPage() {
   useEffect(() => {
     if (!feedUrl) return;
 
+    // Reset to loading when feedUrl changes so stale content isn't shown mid-fetch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStatus("loading");
     fetch(`/api/feed?url=${encodeURIComponent(decodeURIComponent(feedUrl))}`)
       .then((res) => {
@@ -54,7 +56,7 @@ export default function PodcastPage() {
     );
   }
   if (status === "error")
-    return <p className={styles.status}>Couldn't load this podcast. Try another one.</p>;
+    return <p className={styles.status}>Couldn&apos;t load this podcast. Try another one.</p>;
   if (!feed) return null;
 
   return (

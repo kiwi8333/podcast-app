@@ -10,7 +10,7 @@ export default function Downloads() {
   if (downloads.length === 0) {
     return (
       <p className={styles.status}>
-        You haven't downloaded any episodes yet. Download one from a show's episode list.
+        You haven&apos;t downloaded any episodes yet. Download one from a show&apos;s episode list.
       </p>
     );
   }

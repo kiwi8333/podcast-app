@@ -18,6 +18,8 @@ export default function CategoryPage() {
 
   useEffect(() => {
     if (!category) return;
+    // Reset to loading when category changes so stale content isn't shown mid-fetch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStatus("loading");
     fetchCategoryPodcasts(category, 50)
       .then((results) => {

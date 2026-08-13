@@ -8,7 +8,7 @@ export default function Favorites() {
   if (favorites.length === 0) {
     return (
       <p className={styles.status}>
-        You haven't subscribed to any shows yet. Search for one on the Home page.
+        You haven&apos;t subscribed to any shows yet. Search for one on the Home page.
       </p>
     );
   }

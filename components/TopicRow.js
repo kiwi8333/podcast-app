@@ -10,6 +10,8 @@ export default function TopicRow({ category }) {
 
   useEffect(() => {
     let cancelled = false;
+    // Reset to loading when category changes so stale content isn't shown mid-fetch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStatus("loading");
     fetchCategoryPodcasts(category)
       .then((results) => {
