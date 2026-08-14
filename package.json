@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.117.1",
     "idb": "^8.0.3",
     "lucide-react": "^1.31.0",
     "next": "^16.3.1",

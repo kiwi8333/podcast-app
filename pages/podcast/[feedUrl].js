@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Star } from "lucide-react";
 import EpisodeList from "@/components/EpisodeList";
 import EpisodeRowSkeleton from "@/components/EpisodeRowSkeleton";
+import EpisodeSemanticSearch from "@/components/EpisodeSemanticSearch";
 import Skeleton from "@/components/Skeleton";
 import { useFavorite } from "@/lib/favorites";
 import { markSeen } from "@/lib/subscriptions";
@@ -15,6 +16,7 @@ export default function PodcastPage() {
 
   const [feed, setFeed] = useState(null);
   const [status, setStatus] = useState("loading");
+  const [searchResults, setSearchResults] = useState(null);
   const [favorited, toggleFavorited] = useFavorite({
     feedUrl: feedUrl ? decodeURIComponent(feedUrl) : "",
     title: feed?.title,
@@ -28,6 +30,7 @@ export default function PodcastPage() {
     // Reset to loading when feedUrl changes so stale content isn't shown mid-fetch.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setStatus("loading");
+    setSearchResults(null);
     fetch(`/api/feed?url=${encodeURIComponent(decodeURIComponent(feedUrl))}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load feed");
@@ -85,7 +88,14 @@ export default function PodcastPage() {
           {favorited ? "Subscribed" : "Subscribe"}
         </button>
       </div>
-      <EpisodeList episodes={feed.episodes} podcastTitle={feed.title} artwork={feed.image} />
+      {feed.episodes.length > 1 && (
+        <EpisodeSemanticSearch episodes={feed.episodes} onResults={setSearchResults} />
+      )}
+      <EpisodeList
+        episodes={searchResults || feed.episodes}
+        podcastTitle={feed.title}
+        artwork={feed.image}
+      />
     </div>
   );
 }

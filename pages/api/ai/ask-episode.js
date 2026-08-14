@@ -1,0 +1,54 @@
+import { aiClient, AI_MODEL } from "@/lib/ai/client";
+import { fetchTranscript, stripTimingMarkup } from "@/lib/ai/transcript";
+
+const MAX_TRANSCRIPT_CHARS = 20000;
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    res.status(405).json({ error: "Method not allowed" });
+    return;
+  }
+
+  const { question, transcriptUrl, transcriptType, title, description, conversationHistory } =
+    req.body || {};
+
+  if (!question || !transcriptUrl) {
+    res.status(400).json({ error: "Missing question or transcriptUrl" });
+    return;
+  }
+
+  let transcript;
+  try {
+    const raw = await fetchTranscript(transcriptUrl);
+    transcript = stripTimingMarkup(raw, transcriptType);
+  } catch {
+    res.status(400).json({ error: "Could not load transcript" });
+    return;
+  }
+
+  const truncated = transcript.slice(0, MAX_TRANSCRIPT_CHARS);
+  const history = Array.isArray(conversationHistory) ? conversationHistory : [];
+
+  try {
+    const response = await aiClient.messages.create({
+      model: AI_MODEL,
+      max_tokens: 1024,
+      thinking: { type: "adaptive" },
+      output_config: { effort: "medium" },
+      system: `Answer questions about this podcast episode using only the transcript below. If the answer isn't in the transcript, say so plainly rather than guessing.\n\nEpisode: ${title || "Untitled"}\n${description ? `Description: ${description}\n` : ""}\nTranscript:\n${truncated}`,
+      messages: [...history, { role: "user", content: question }],
+    });
+
+    const answer = response.content.find((b) => b.type === "text")?.text || "";
+    res.status(200).json({
+      answer,
+      conversationHistory: [
+        ...history,
+        { role: "user", content: question },
+        { role: "assistant", content: answer },
+      ],
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Could not answer that question" });
+  }
+}

@@ -3,6 +3,8 @@ import { usePlayer } from "./Player/PlayerContext";
 import { useDownloadStatus } from "@/lib/downloads";
 import { useQueue } from "@/lib/queue";
 import Chapters from "./Chapters";
+import EpisodeSummary from "./EpisodeSummary";
+import AskEpisodeChat from "./AskEpisodeChat";
 import styles from "./EpisodeRow.module.css";
 
 export default function EpisodeRow({ episode, podcastTitle, artwork }) {
@@ -59,7 +61,9 @@ export default function EpisodeRow({ episode, podcastTitle, artwork }) {
           )}
         </div>
         {episode.description && <p className={styles.description}>{episode.description}</p>}
+        <EpisodeSummary episode={episode} podcastTitle={podcastTitle} />
         <Chapters episode={episode} />
+        <AskEpisodeChat episode={episode} />
       </div>
       <div className={styles.actions}>
         <button

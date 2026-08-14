@@ -1,5 +1,6 @@
 import PodcastCard from "@/components/PodcastCard";
 import OpmlControls from "@/components/OpmlControls";
+import CatchMeUpDigest from "@/components/CatchMeUpDigest";
 import { useFavoritesList } from "@/lib/favorites";
 import styles from "./ListPage.module.css";
 
@@ -8,6 +9,7 @@ export default function Favorites() {
 
   return (
     <div>
+      <CatchMeUpDigest favorites={favorites} />
       <OpmlControls favorites={favorites} onImport={refresh} />
 
       {favorites.length === 0 ? (
