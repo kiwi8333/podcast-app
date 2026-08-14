@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { usePlayer } from "./Player/PlayerContext";
+import { isTimedTranscriptType } from "@/lib/transcripts";
 import styles from "./Chapters.module.css";
 
 function formatTime(seconds) {
@@ -20,7 +21,7 @@ export default function Chapters({ episode }) {
   const isCurrentEpisode = nowPlaying?.audioUrl === episode.audioUrl;
 
   // Only VTT/SRT carry real per-line timing for the generate-chapters route.
-  const timedTranscript = episode.transcripts?.find((t) => /vtt|srt/i.test(t.type || ""));
+  const timedTranscript = episode.transcripts?.find((t) => isTimedTranscriptType(t.type));
 
   useEffect(() => {
     if (!episode.chaptersUrl) return;

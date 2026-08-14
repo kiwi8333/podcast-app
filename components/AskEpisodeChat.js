@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { MessageCircle, Send } from "lucide-react";
+import { pickTranscript } from "@/lib/transcripts";
 import styles from "./AskEpisodeChat.module.css";
-
-const TEXT_TYPES = ["text/plain", "text/vtt", "application/srt", "application/json"];
-
-function pickTranscript(transcripts) {
-  return transcripts.find((t) => TEXT_TYPES.includes((t.type || "").toLowerCase())) || transcripts[0];
-}
 
 export default function AskEpisodeChat({ episode }) {
   const [open, setOpen] = useState(false);

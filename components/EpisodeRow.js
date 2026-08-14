@@ -5,6 +5,7 @@ import { useQueue } from "@/lib/queue";
 import Chapters from "./Chapters";
 import EpisodeSummary from "./EpisodeSummary";
 import AskEpisodeChat from "./AskEpisodeChat";
+import Transcript from "./Transcript";
 import styles from "./EpisodeRow.module.css";
 
 export default function EpisodeRow({ episode, podcastTitle, artwork }) {
@@ -63,6 +64,7 @@ export default function EpisodeRow({ episode, podcastTitle, artwork }) {
         {episode.description && <p className={styles.description}>{episode.description}</p>}
         <EpisodeSummary episode={episode} podcastTitle={podcastTitle} />
         <Chapters episode={episode} />
+        <Transcript episode={episode} />
         <AskEpisodeChat episode={episode} />
       </div>
       <div className={styles.actions}>
