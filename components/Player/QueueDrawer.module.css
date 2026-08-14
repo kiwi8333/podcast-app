@@ -1,0 +1,126 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 101;
+}
+
+.panel {
+  position: fixed;
+  bottom: 90px;
+  right: var(--space-4);
+  left: var(--space-4);
+  max-width: 400px;
+  margin-left: auto;
+  z-index: 102;
+  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--muted-text);
+  cursor: pointer;
+}
+
+.empty {
+  padding: var(--space-4);
+  color: var(--muted-text);
+  font-size: var(--font-size-sm);
+}
+
+.list {
+  overflow-y: auto;
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.item:hover {
+  background: var(--background);
+}
+
+.artwork {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.podcastTitle {
+  font-size: var(--font-size-xs);
+  color: var(--muted-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playButton {
+  flex-shrink: 0;
+  height: 28px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--accent);
+  color: var(--accent-foreground);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.removeButton {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--muted-text);
+  cursor: pointer;
+}

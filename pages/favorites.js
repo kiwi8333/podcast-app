@@ -1,30 +1,33 @@
 import PodcastCard from "@/components/PodcastCard";
+import OpmlControls from "@/components/OpmlControls";
 import { useFavoritesList } from "@/lib/favorites";
 import styles from "./ListPage.module.css";
 
 export default function Favorites() {
-  const [favorites, remove] = useFavoritesList();
-
-  if (favorites.length === 0) {
-    return (
-      <p className={styles.status}>
-        You haven&apos;t subscribed to any shows yet. Search for one on the Home page.
-      </p>
-    );
-  }
+  const [favorites, remove, refresh] = useFavoritesList();
 
   return (
-    <div className={styles.list}>
-      {favorites.map((podcast) => (
-        <div key={podcast.feedUrl} className={styles.row}>
-          <div className={styles.rowCard}>
-            <PodcastCard podcast={podcast} />
-          </div>
-          <button onClick={() => remove(podcast.feedUrl)} className={styles.removeButton}>
-            Remove
-          </button>
+    <div>
+      <OpmlControls favorites={favorites} onImport={refresh} />
+
+      {favorites.length === 0 ? (
+        <p className={styles.status}>
+          You haven&apos;t subscribed to any shows yet. Search for one on the Home page.
+        </p>
+      ) : (
+        <div className={styles.list}>
+          {favorites.map((podcast) => (
+            <div key={podcast.feedUrl} className={styles.row}>
+              <div className={styles.rowCard}>
+                <PodcastCard podcast={podcast} />
+              </div>
+              <button onClick={() => remove(podcast.feedUrl)} className={styles.removeButton}>
+                Remove
+              </button>
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 }

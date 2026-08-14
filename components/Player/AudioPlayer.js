@@ -1,5 +1,7 @@
 import { Play, Pause, RotateCcw, RotateCw } from "lucide-react";
 import { usePlayer } from "./PlayerContext";
+import SleepTimerButton from "./SleepTimerButton";
+import QueueButton from "./QueueButton";
 import styles from "./AudioPlayer.module.css";
 
 const SPEEDS = [0.5, 1, 1.25, 1.5, 2];
@@ -47,6 +49,8 @@ export default function AudioPlayer() {
           <button onClick={handleSpeedClick} className={styles.speedButton}>
             {playbackRate}x
           </button>
+          <SleepTimerButton />
+          <QueueButton />
         </div>
 
         <div className={styles.controlsRow}>

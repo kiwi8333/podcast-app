@@ -19,6 +19,27 @@
   font-size: var(--font-size-xs);
   color: var(--muted-text);
   margin-top: var(--space-1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.badge {
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted-text);
+}
+
+.episodeArtwork {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  float: left;
+  margin: 0 var(--space-3) var(--space-2) 0;
 }
 
 .description {

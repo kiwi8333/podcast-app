@@ -1,0 +1,67 @@
+.wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: 30px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--border);
+}
+
+.buttonActive {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 101;
+}
+
+.menu {
+  position: absolute;
+  bottom: calc(100% + var(--space-2));
+  right: 0;
+  z-index: 102;
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.menuItem {
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  background: transparent;
+  color: var(--foreground);
+  font-size: var(--font-size-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.menuItem:hover {
+  background: var(--border);
+}

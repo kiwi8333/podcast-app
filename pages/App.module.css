@@ -20,6 +20,7 @@
 }
 
 .navLink {
+  position: relative;
   font-size: var(--font-size-sm);
   color: var(--muted-text);
   transition: color 0.15s ease;
@@ -27,6 +28,16 @@
 
 .navLink:hover {
   color: var(--foreground);
+}
+
+.navBadge {
+  position: absolute;
+  top: -2px;
+  right: -8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
 }
 
 .page {

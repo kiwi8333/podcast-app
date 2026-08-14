@@ -1,5 +1,6 @@
 import { useState } from "react";
 import SearchBar from "@/components/SearchBar";
+import AddFeedForm from "@/components/AddFeedForm";
 import PodcastCard from "@/components/PodcastCard";
 import PodcastCardSkeleton from "@/components/PodcastCardSkeleton";
 import ContinueListeningRow from "@/components/ContinueListeningRow";
@@ -26,6 +27,7 @@ export default function Home() {
   return (
     <div>
       <SearchBar onSearch={handleSearch} />
+      <AddFeedForm />
 
       {status === "idle" && (
         <>

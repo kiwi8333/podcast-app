@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { getDownload } from "@/lib/downloads";
 import { getProgress, setProgress, clearProgress } from "@/lib/playbackProgress";
+import { getQueue, removeFromQueue } from "@/lib/queue";
 
 const PlayerContext = createContext(null);
 const PROGRESS_SAVE_INTERVAL = 5;
@@ -10,12 +11,22 @@ export function PlayerProvider({ children }) {
   const objectUrlRef = useRef(null);
   const nowPlayingRef = useRef(null);
   const lastSavedRef = useRef(0);
+  // Always points at this render's playEpisode, so the mount-time handleEnded
+  // closure (registered once, deps []) auto-advances using the current
+  // playbackRate instead of whatever it was when the component first mounted.
+  const playEpisodeRef = useRef(null);
 
   const [nowPlaying, setNowPlaying] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playbackRate, setPlaybackRateState] = useState(1);
+
+  // Sleep timer is intentionally session-only (not persisted to localStorage,
+  // unlike favorites/progress/queue) — it should reset on reload.
+  const sleepTargetRef = useRef(null); // null | epoch-ms | "end-of-episode"
+  const [sleepMinutesRemaining, setSleepMinutesRemaining] = useState(null);
+  const [sleepMode, setSleepMode] = useState("off"); // "off" | "countdown" | "end"
 
   function updateNowPlaying(value) {
     nowPlayingRef.current = value;
@@ -65,6 +76,21 @@ export function PlayerProvider({ children }) {
       setIsPlaying(false);
       const playing = nowPlayingRef.current;
       if (playing) clearProgress(playing.audioUrl);
+
+      const sleepAtEnd = sleepTargetRef.current === "end-of-episode";
+      if (sleepAtEnd) {
+        sleepTargetRef.current = null;
+        setSleepMinutesRemaining(null);
+        setSleepMode("off");
+      }
+
+      if (!sleepAtEnd) {
+        const next = getQueue()[0];
+        if (next) {
+          removeFromQueue(next.audioUrl);
+          playEpisodeRef.current?.(next);
+        }
+      }
     }
 
     audio.addEventListener("timeupdate", handleTimeUpdate);
@@ -113,6 +139,10 @@ export function PlayerProvider({ children }) {
     // jump once the seek lands.
   }
 
+  useEffect(() => {
+    playEpisodeRef.current = playEpisode;
+  });
+
   function togglePlayPause() {
     const audio = audioRef.current;
     if (!audio || !nowPlaying) return;
@@ -139,6 +169,43 @@ export function PlayerProvider({ children }) {
     setPlaybackRateState(rate);
   }
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const target = sleepTargetRef.current;
+      if (typeof target !== "number") return;
+
+      const remainingMs = target - Date.now();
+      if (remainingMs <= 0) {
+        sleepTargetRef.current = null;
+        setSleepMinutesRemaining(null);
+        setSleepMode("off");
+        audioRef.current?.pause();
+        return;
+      }
+      setSleepMinutesRemaining(Math.ceil(remainingMs / 60000));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  function setSleepTimer(minutes) {
+    sleepTargetRef.current = Date.now() + minutes * 60 * 1000;
+    setSleepMinutesRemaining(minutes);
+    setSleepMode("countdown");
+  }
+
+  function setSleepAtEndOfEpisode() {
+    sleepTargetRef.current = "end-of-episode";
+    setSleepMinutesRemaining(null);
+    setSleepMode("end");
+  }
+
+  function cancelSleepTimer() {
+    sleepTargetRef.current = null;
+    setSleepMinutesRemaining(null);
+    setSleepMode("off");
+  }
+
   return (
     <PlayerContext.Provider
       value={{
@@ -152,6 +219,11 @@ export function PlayerProvider({ children }) {
         seek,
         skip,
         setPlaybackRate,
+        sleepMinutesRemaining,
+        sleepMode,
+        setSleepTimer,
+        setSleepAtEndOfEpisode,
+        cancelSleepTimer,
       }}
     >
       {children}

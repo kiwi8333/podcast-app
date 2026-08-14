@@ -8,7 +8,10 @@ export default function PodcastCard({ podcast }) {
         <img src={podcast.artwork} alt="" width={64} height={64} className={styles.artwork} />
       )}
       <div className={styles.info}>
-        <div className={styles.title}>{podcast.title}</div>
+        <div className={styles.title}>
+          {podcast.title}
+          {podcast.hasNewEpisode && <span className={styles.newBadge} title="New episode" />}
+        </div>
         <div className={styles.artist}>{podcast.artist}</div>
       </div>
     </Link>

@@ -6,10 +6,13 @@ import "@/styles/globals.css";
 import styles from "./App.module.css";
 import { PlayerProvider } from "@/components/Player/PlayerContext";
 import AudioPlayer from "@/components/Player/AudioPlayer";
+import { useFavoritesList } from "@/lib/favorites";
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();
   const [transitioning, setTransitioning] = useState(false);
+  const [favorites] = useFavoritesList();
+  const hasNewEpisodes = favorites.some((f) => f.hasNewEpisode);
 
   useEffect(() => {
     function handleStart() {
@@ -39,6 +42,7 @@ export default function App({ Component, pageProps }) {
           </Link>
           <Link href="/favorites" className={styles.navLink}>
             My Subscriptions
+            {hasNewEpisodes && <span className={styles.navBadge} title="New episodes" />}
           </Link>
           <Link href="/downloads" className={styles.navLink}>
             Downloads

@@ -1,16 +1,29 @@
-import { Download, Check, Loader2, Play } from "lucide-react";
+import { Download, Check, Loader2, Play, ListPlus } from "lucide-react";
 import { usePlayer } from "./Player/PlayerContext";
 import { useDownloadStatus } from "@/lib/downloads";
+import { useQueue } from "@/lib/queue";
+import Chapters from "./Chapters";
 import styles from "./EpisodeRow.module.css";
 
 export default function EpisodeRow({ episode, podcastTitle, artwork }) {
   const { playEpisode, nowPlaying } = usePlayer();
   const isPlaying = nowPlaying?.audioUrl === episode.audioUrl;
   const [downloadStatus, download, removeDownload] = useDownloadStatus(episode.audioUrl);
+  const [queue, addToQueue] = useQueue();
+  const isQueued = queue.some((e) => e.audioUrl === episode.audioUrl);
 
   function handlePlay() {
     if (!episode.audioUrl) return;
     playEpisode({
+      audioUrl: episode.audioUrl,
+      title: episode.title,
+      podcastTitle,
+      artwork,
+    });
+  }
+
+  function handleQueueClick() {
+    addToQueue({
       audioUrl: episode.audioUrl,
       title: episode.title,
       podcastTitle,
@@ -34,13 +47,29 @@ export default function EpisodeRow({ episode, podcastTitle, artwork }) {
   return (
     <div className={styles.row}>
       <div className={styles.info}>
+        {episode.artwork && <img src={episode.artwork} alt="" className={styles.episodeArtwork} />}
         <div className={styles.title}>{episode.title}</div>
         <div className={styles.date}>
           {episode.pubDate ? new Date(episode.pubDate).toLocaleDateString() : ""}
+          {(episode.season || episode.episodeNumber) && (
+            <span className={styles.badge}>
+              {episode.season ? `S${episode.season} ` : ""}
+              {episode.episodeNumber ? `E${episode.episodeNumber}` : ""}
+            </span>
+          )}
         </div>
         {episode.description && <p className={styles.description}>{episode.description}</p>}
+        <Chapters episode={episode} />
       </div>
       <div className={styles.actions}>
+        <button
+          onClick={handleQueueClick}
+          disabled={!episode.audioUrl || isQueued}
+          title={isQueued ? "In queue" : "Add to queue"}
+          className={`${styles.iconButton} ${isQueued ? styles.iconButtonDownloaded : ""}`}
+        >
+          {isQueued ? <Check size={18} /> : <ListPlus size={18} />}
+        </button>
         <button
           onClick={handleDownloadClick}
           disabled={!episode.audioUrl || downloadStatus === "downloading"}

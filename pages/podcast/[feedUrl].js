@@ -6,6 +6,7 @@ import EpisodeList from "@/components/EpisodeList";
 import EpisodeRowSkeleton from "@/components/EpisodeRowSkeleton";
 import Skeleton from "@/components/Skeleton";
 import { useFavorite } from "@/lib/favorites";
+import { markSeen } from "@/lib/subscriptions";
 import styles from "../Podcast.module.css";
 
 export default function PodcastPage() {
@@ -35,6 +36,7 @@ export default function PodcastPage() {
       .then((data) => {
         setFeed(data);
         setStatus("done");
+        markSeen(decodeURIComponent(feedUrl), data.episodes?.[0]?.guid);
       })
       .catch(() => setStatus("error"));
   }, [feedUrl]);
