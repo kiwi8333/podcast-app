@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import Skeleton from "@/components/Skeleton";
 import { getCategory } from "@/lib/categories";
 import { fetchCategoryPodcasts } from "@/lib/discover";
@@ -33,11 +32,7 @@ export default function CategoryPage() {
 
   return (
     <div>
-      <Link href="/" className={podcastStyles.back}>
-        <ArrowLeft size={14} />
-        Back home
-      </Link>
-      <h1 style={{ fontSize: "var(--font-size-xl)", margin: "16px 0" }}>{category.label}</h1>
+      <h1 className={podcastStyles.categoryTitle}>{category.label}</h1>
 
       {status === "loading" && (
         <div className={styles.grid}>

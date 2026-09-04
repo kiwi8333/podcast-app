@@ -16,6 +16,18 @@ export default function App({ Component, pageProps }) {
   const hasNewEpisodes = favorites.some((f) => f.hasNewEpisode);
 
   useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+    // Production only. A service worker in dev caches Next's HMR chunks and
+    // then serves stale ones back, which presents as edits silently not
+    // taking effect — a genuinely confusing failure to debug.
+    if (process.env.NODE_ENV !== "production") return;
+    navigator.serviceWorker.register("/sw.js").catch(() => {
+      // Registration fails on http:// origins and with storage disabled.
+      // The app works without it; there is nothing to tell the user.
+    });
+  }, []);
+
+  useEffect(() => {
     function handleStart() {
       setTransitioning(true);
     }

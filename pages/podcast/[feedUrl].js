@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
-import { ArrowLeft, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import EpisodeList from "@/components/EpisodeList";
 import EpisodeRowSkeleton from "@/components/EpisodeRowSkeleton";
 import EpisodeSemanticSearch from "@/components/EpisodeSemanticSearch";
 import Skeleton from "@/components/Skeleton";
 import { useFavorite } from "@/lib/favorites";
 import { markSeen } from "@/lib/subscriptions";
+import { getCachedFeed, setCachedFeed } from "@/lib/feedCache";
 import styles from "../Podcast.module.css";
 
 export default function PodcastPage() {
@@ -26,22 +26,45 @@ export default function PodcastPage() {
 
   useEffect(() => {
     if (!feedUrl) return;
+    const url = decodeURIComponent(feedUrl);
+    let cancelled = false;
 
     // Reset to loading when feedUrl changes so stale content isn't shown mid-fetch.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setStatus("loading");
     setSearchResults(null);
-    fetch(`/api/feed?url=${encodeURIComponent(decodeURIComponent(feedUrl))}`)
-      .then((res) => {
+
+    // Paint whatever was cached, then revalidate over the network. Opening a
+    // show used to mean staring at skeletons for a full feed fetch and parse
+    // every single time, even for a feed read a minute ago.
+    async function load() {
+      const cached = await getCachedFeed(url);
+      if (cancelled) return;
+      if (cached) {
+        setFeed(cached);
+        setStatus("done");
+      }
+
+      try {
+        const res = await fetch(`/api/feed?url=${encodeURIComponent(url)}`);
         if (!res.ok) throw new Error("Failed to load feed");
-        return res.json();
-      })
-      .then((data) => {
+        const data = await res.json();
+        if (cancelled) return;
         setFeed(data);
         setStatus("done");
-        markSeen(decodeURIComponent(feedUrl), data.episodes?.[0]?.guid);
-      })
-      .catch(() => setStatus("error"));
+        markSeen(url, data.episodes?.[0]?.guid);
+        setCachedFeed(url, data);
+      } catch {
+        // Offline with something cached is a working screen, not an error —
+        // only report failure when there is nothing at all to show.
+        if (!cancelled && !cached) setStatus("error");
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [feedUrl]);
 
   if (status === "loading") {
@@ -66,10 +89,6 @@ export default function PodcastPage() {
 
   return (
     <div>
-      <Link href="/" className={styles.back}>
-        <ArrowLeft size={14} />
-        Back to search
-      </Link>
       <div className={styles.header}>
         {feed.image && (
           <img src={feed.image} alt="" width={80} height={80} className={styles.artwork} />

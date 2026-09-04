@@ -73,3 +73,13 @@
   color: var(--muted-text);
   font-size: var(--font-size-sm);
 }
+
+/* Matches the iOS large title used by ScreenHeader on the tab screens, so a
+   category reads as the same kind of heading rather than an inline one-off. */
+.categoryTitle {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
+  margin: var(--space-2) 0 var(--space-4);
+}
