@@ -206,6 +206,77 @@ export function PlayerProvider({ children }) {
     setSleepMode("off");
   }
 
+  // Lock-screen and notification controls. On a phone this is the surface
+  // people actually use to pause a podcast — without it the episode is
+  // uncontrollable the moment the screen locks.
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
+
+    if (!nowPlaying) {
+      navigator.mediaSession.metadata = null;
+      navigator.mediaSession.playbackState = "none";
+      return;
+    }
+
+    navigator.mediaSession.metadata = new window.MediaMetadata({
+      title: nowPlaying.title || "",
+      artist: nowPlaying.podcastTitle || "",
+      album: nowPlaying.podcastTitle || "",
+      artwork: nowPlaying.artwork ? [{ src: nowPlaying.artwork, sizes: "512x512" }] : [],
+    });
+    navigator.mediaSession.playbackState = isPlaying ? "playing" : "paused";
+
+    // Match the in-app buttons: 15s either way.
+    const handlers = [
+      ["play", () => audioRef.current?.play().catch(() => {})],
+      ["pause", () => audioRef.current?.pause()],
+      ["seekbackward", (d) => skip(-(d?.seekOffset || 15))],
+      ["seekforward", (d) => skip(d?.seekOffset || 15)],
+      ["seekto", (d) => seek(d?.seekTime ?? 0)],
+    ];
+    for (const [action, handler] of handlers) {
+      // Not every browser implements every action; an unsupported one throws
+      // rather than being ignored, and would take the rest down with it.
+      try {
+        navigator.mediaSession.setActionHandler(action, handler);
+      } catch {
+        // unsupported action — skip it
+      }
+    }
+
+    return () => {
+      for (const [action] of handlers) {
+        try {
+          navigator.mediaSession.setActionHandler(action, null);
+        } catch {
+          // nothing to clear
+        }
+      }
+    };
+    // seek/skip are stable in behaviour and only read refs, so they're
+    // deliberately not deps — including them would re-register handlers on
+    // every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nowPlaying, isPlaying]);
+
+  // Position is set on state changes rather than on every timeupdate: the
+  // platform extrapolates the playhead from position + playbackRate, so
+  // re-sending it four times a second buys nothing.
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
+    if (!navigator.mediaSession.setPositionState) return;
+    if (!nowPlaying || !Number.isFinite(duration) || duration <= 0) return;
+    try {
+      navigator.mediaSession.setPositionState({
+        duration,
+        playbackRate,
+        position: Math.min(Math.max(audioRef.current?.currentTime || 0, 0), duration),
+      });
+    } catch {
+      // some browsers reject a position state mid-load — harmless
+    }
+  }, [nowPlaying, duration, playbackRate, isPlaying]);
+
   return (
     <PlayerContext.Provider
       value={{

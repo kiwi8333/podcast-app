@@ -6,11 +6,17 @@ import styles from "./AudioPlayer.module.css";
 
 const SPEEDS = [0.5, 1, 1.25, 1.5, 2];
 
+// Podcast episodes routinely run past an hour, where a bare minutes:seconds
+// clock reads "90:00" instead of "1:30:00". Hours appear only when there are
+// any, so short episodes keep the compact form.
 function formatTime(seconds) {
   if (!seconds || !Number.isFinite(seconds)) return "0:00";
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
+  const total = Math.floor(seconds);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  const ss = s.toString().padStart(2, "0");
+  return h > 0 ? `${h}:${m.toString().padStart(2, "0")}:${ss}` : `${m}:${ss}`;
 }
 
 export default function AudioPlayer() {
