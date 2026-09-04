@@ -1,9 +1,15 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { getDownload } from "@/lib/downloads";
 import { getProgress, setProgress, clearProgress } from "@/lib/playbackProgress";
 import { getQueue, removeFromQueue } from "@/lib/queue";
 
 const PlayerContext = createContext(null);
+// currentTime/duration change ~4x a second while an episode plays. Kept in
+// their own context so that ticking only re-renders what actually shows a
+// clock (AudioPlayer, Transcript) — previously every usePlayer() consumer
+// re-rendered on every tick, including one EpisodeRow per episode in a feed
+// list of fifty.
+const PlayerTimeContext = createContext({ currentTime: 0, duration: 0 });
 const PROGRESS_SAVE_INTERVAL = 5;
 
 export function PlayerProvider({ children }) {
@@ -108,7 +114,7 @@ export function PlayerProvider({ children }) {
     };
   }, []);
 
-  async function playEpisode(episode) {
+  const playEpisode = useCallback(async (episode) => {
     if (objectUrlRef.current) {
       URL.revokeObjectURL(objectUrlRef.current);
       objectUrlRef.current = null;
@@ -137,37 +143,37 @@ export function PlayerProvider({ children }) {
     // Playback starts from handleLoadedMetadata, once any saved position has
     // been applied — starting here too would play from 0 then visibly/audibly
     // jump once the seek lands.
-  }
+  }, [playbackRate]);
 
   useEffect(() => {
     playEpisodeRef.current = playEpisode;
   });
 
-  function togglePlayPause() {
+  const togglePlayPause = useCallback(() => {
     const audio = audioRef.current;
     if (!audio || !nowPlaying) return;
     if (audio.paused) audio.play().catch(() => {});
     else audio.pause();
-  }
+  }, [nowPlaying]);
 
-  function seek(time) {
+  const seek = useCallback((time) => {
     const audio = audioRef.current;
     if (!audio) return;
     audio.currentTime = Math.max(0, Math.min(time, audio.duration || time));
     setCurrentTime(audio.currentTime);
-  }
+  }, []);
 
-  function skip(seconds) {
+  const skip = useCallback((seconds) => {
     const audio = audioRef.current;
     if (!audio) return;
     seek(audio.currentTime + seconds);
-  }
+  }, [seek]);
 
-  function setPlaybackRate(rate) {
+  const setPlaybackRate = useCallback((rate) => {
     const audio = audioRef.current;
     if (audio) audio.playbackRate = rate;
     setPlaybackRateState(rate);
-  }
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -188,23 +194,23 @@ export function PlayerProvider({ children }) {
     return () => clearInterval(interval);
   }, []);
 
-  function setSleepTimer(minutes) {
+  const setSleepTimer = useCallback((minutes) => {
     sleepTargetRef.current = Date.now() + minutes * 60 * 1000;
     setSleepMinutesRemaining(minutes);
     setSleepMode("countdown");
-  }
+  }, []);
 
-  function setSleepAtEndOfEpisode() {
+  const setSleepAtEndOfEpisode = useCallback(() => {
     sleepTargetRef.current = "end-of-episode";
     setSleepMinutesRemaining(null);
     setSleepMode("end");
-  }
+  }, []);
 
-  function cancelSleepTimer() {
+  const cancelSleepTimer = useCallback(() => {
     sleepTargetRef.current = null;
     setSleepMinutesRemaining(null);
     setSleepMode("off");
-  }
+  }, []);
 
   // Lock-screen and notification controls. On a phone this is the surface
   // people actually use to pause a podcast — without it the episode is
@@ -277,32 +283,59 @@ export function PlayerProvider({ children }) {
     }
   }, [nowPlaying, duration, playbackRate, isPlaying]);
 
+  // Without this the value object was rebuilt on every render, so every
+  // consumer re-rendered even when nothing it reads had changed.
+  const value = useMemo(
+    () => ({
+      nowPlaying,
+      isPlaying,
+      playbackRate,
+      playEpisode,
+      togglePlayPause,
+      seek,
+      skip,
+      setPlaybackRate,
+      sleepMinutesRemaining,
+      sleepMode,
+      setSleepTimer,
+      setSleepAtEndOfEpisode,
+      cancelSleepTimer,
+    }),
+    [
+      nowPlaying,
+      isPlaying,
+      playbackRate,
+      playEpisode,
+      togglePlayPause,
+      seek,
+      skip,
+      setPlaybackRate,
+      sleepMinutesRemaining,
+      sleepMode,
+      setSleepTimer,
+      setSleepAtEndOfEpisode,
+      cancelSleepTimer,
+    ]
+  );
+
+  const timeValue = useMemo(() => ({ currentTime, duration }), [currentTime, duration]);
+
   return (
-    <PlayerContext.Provider
-      value={{
-        nowPlaying,
-        isPlaying,
-        currentTime,
-        duration,
-        playbackRate,
-        playEpisode,
-        togglePlayPause,
-        seek,
-        skip,
-        setPlaybackRate,
-        sleepMinutesRemaining,
-        sleepMode,
-        setSleepTimer,
-        setSleepAtEndOfEpisode,
-        cancelSleepTimer,
-      }}
-    >
-      {children}
-      <audio ref={audioRef} style={{ display: "none" }} />
+    <PlayerContext.Provider value={value}>
+      <PlayerTimeContext.Provider value={timeValue}>
+        {children}
+        <audio ref={audioRef} style={{ display: "none" }} />
+      </PlayerTimeContext.Provider>
     </PlayerContext.Provider>
   );
 }
 
 export function usePlayer() {
   return useContext(PlayerContext);
+}
+
+// Separate hook on purpose: reading this subscribes a component to the
+// ~4Hz playback tick, so only components that display a time should use it.
+export function usePlayerTime() {
+  return useContext(PlayerTimeContext);
 }

@@ -39,7 +39,18 @@ export default async function handler(req, res) {
       max_tokens: 1024,
       thinking: { type: "adaptive" },
       output_config: { effort: "medium" },
-      system: `Answer questions about this podcast episode using only the transcript below. If the answer isn't in the transcript, say so plainly rather than guessing.\n\nEpisode: ${title || "Untitled"}\n${description ? `Description: ${description}\n` : ""}\nTranscript:\n${truncated}`,
+      // The transcript runs to 20k characters and was re-sent at full price
+      // on every follow-up question. Caching the system block makes each
+      // later turn far cheaper. Caching is a prefix match, so this text has
+      // to stay byte-identical between turns — it does, since it's rebuilt
+      // from the same transcript URL each time.
+      system: [
+        {
+          type: "text",
+          text: `Answer questions about this podcast episode using only the transcript below. If the answer isn't in the transcript, say so plainly rather than guessing.\n\nEpisode: ${title || "Untitled"}\n${description ? `Description: ${description}\n` : ""}\nTranscript:\n${truncated}`,
+          cache_control: { type: "ephemeral" },
+        },
+      ],
       messages: [...history, { role: "user", content: question }],
     });
 

@@ -1,5 +1,5 @@
 import { Play, Pause, RotateCcw, RotateCw } from "lucide-react";
-import { usePlayer } from "./PlayerContext";
+import { usePlayer, usePlayerTime } from "./PlayerContext";
 import SleepTimerButton from "./SleepTimerButton";
 import QueueButton from "./QueueButton";
 import styles from "./AudioPlayer.module.css";
@@ -23,14 +23,14 @@ export default function AudioPlayer() {
   const {
     nowPlaying,
     isPlaying,
-    currentTime,
-    duration,
     playbackRate,
     togglePlayPause,
     seek,
     skip,
     setPlaybackRate,
   } = usePlayer();
+  // Subscribes only this component to the playback tick.
+  const { currentTime, duration } = usePlayerTime();
 
   if (!nowPlaying) {
     return null;

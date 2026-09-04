@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { FileText } from "lucide-react";
-import { usePlayer } from "./Player/PlayerContext";
+import { usePlayer, usePlayerTime } from "./Player/PlayerContext";
 import { pickTranscript, isTimedTranscriptType, parseTimedTranscript } from "@/lib/transcripts";
 import styles from "./Transcript.module.css";
 
 export default function Transcript({ episode }) {
-  const { nowPlaying, currentTime, seek } = usePlayer();
+  const { nowPlaying, seek } = usePlayer();
+  const { currentTime } = usePlayerTime();
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | loading | done | error
   const [segments, setSegments] = useState(null);
