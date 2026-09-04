@@ -27,6 +27,13 @@
 
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
     Roboto, Helvetica, Arial, sans-serif;
+
+  /* iOS tab bars are translucent over the content behind them; the solid
+     variant is for anything that has to paint over that blur, like a badge
+     ring. */
+  --tab-bar-height: 49px;
+  --bar-background: rgba(249, 249, 249, 0.82);
+  --bar-background-solid: #f9f9f9;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -38,6 +45,8 @@
     --border: #38383a;
     --accent: #0a84ff;
     --accent-foreground: #ffffff;
+    --bar-background: rgba(22, 22, 24, 0.82);
+    --bar-background-solid: #161618;
   }
 }
 

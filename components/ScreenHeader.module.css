@@ -1,0 +1,36 @@
+.largeHeader {
+  padding: var(--space-2) 0 var(--space-4);
+}
+
+/* iOS Large Title: 34pt, bold, tight tracking. */
+.largeTitle {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
+}
+
+.compactHeader {
+  display: flex;
+  align-items: center;
+  min-height: 44px; /* iOS minimum touch target */
+  margin-bottom: var(--space-2);
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  margin-left: -8px; /* optically aligns the chevron with the content edge */
+  padding: 4px 8px 4px 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.backButton:active {
+  opacity: 0.4;
+}

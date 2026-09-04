@@ -1,0 +1,54 @@
+.tabBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200; /* above the player bar */
+  display: flex;
+  align-items: stretch;
+  height: calc(var(--tab-bar-height) + env(safe-area-inset-bottom));
+  /* Keeps the tabs clear of the home indicator on a notched iPhone. */
+  padding-bottom: env(safe-area-inset-bottom);
+  border-top: 0.5px solid var(--border); /* iOS hairline */
+  background: var(--bar-background);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--muted-text);
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s ease;
+}
+
+.tabActive {
+  color: var(--accent);
+}
+
+.iconWrap {
+  position: relative;
+  display: flex;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.badge {
+  position: absolute;
+  top: -1px;
+  right: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 1.5px solid var(--bar-background-solid);
+}

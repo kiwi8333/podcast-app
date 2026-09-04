@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
-import { Mic } from "lucide-react";
+import Head from "next/head";
 import "@/styles/globals.css";
 import styles from "./App.module.css";
 import { PlayerProvider } from "@/components/Player/PlayerContext";
 import AudioPlayer from "@/components/Player/AudioPlayer";
+import TabBar from "@/components/TabBar";
+import ScreenHeader from "@/components/ScreenHeader";
 import { useFavoritesList } from "@/lib/favorites";
 
 export default function App({ Component, pageProps }) {
@@ -34,25 +35,24 @@ export default function App({ Component, pageProps }) {
 
   return (
     <PlayerProvider>
+      <Head>
+        {/* viewport-fit=cover is what makes env(safe-area-inset-*) resolve to
+            anything but 0 — without it the tab bar sits under the home
+            indicator on a notched iPhone. Lives here, not _document, because
+            Next warns against a viewport meta in _document. */}
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+      </Head>
       <div className={styles.shell}>
-        <nav className={styles.nav}>
-          <Link href="/" className={styles.brand}>
-            <Mic size={18} />
-            Podcasts
-          </Link>
-          <Link href="/favorites" className={styles.navLink}>
-            My Subscriptions
-            {hasNewEpisodes && <span className={styles.navBadge} title="New episodes" />}
-          </Link>
-          <Link href="/downloads" className={styles.navLink}>
-            Downloads
-          </Link>
-        </nav>
+        {/* Titles live here rather than in each page: downloads.js early-returns
+            for its empty state, so a per-page header would vanish exactly when
+            an empty screen most needs a label. */}
+        <ScreenHeader />
         <div className={`${styles.page} ${transitioning ? styles.pageTransitioning : ""}`}>
           <Component {...pageProps} />
         </div>
       </div>
       <AudioPlayer />
+      <TabBar hasNewEpisodes={hasNewEpisodes} />
     </PlayerProvider>
   );
 }

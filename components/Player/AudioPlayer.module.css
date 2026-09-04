@@ -1,11 +1,15 @@
 .bar {
   position: fixed;
-  bottom: 0;
+  /* Rides directly above the tab bar rather than under it, the way the iOS
+     Music/Podcasts mini-player docks to the tab bar. */
+  bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
-  background: var(--surface);
+  background: var(--bar-background);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
   color: var(--foreground);
-  border-top: 1px solid var(--border);
+  border-top: 0.5px solid var(--border);
   z-index: 100;
   padding: var(--space-3) var(--space-4);
 }
