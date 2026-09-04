@@ -44,6 +44,29 @@ VAPID_PRIVATE_KEY=              # keep secret
 VAPID_SUBJECT=mailto:you@example.com
 CRON_SECRET=                    # Vercel sends this as a bearer token on cron requests
 BLOB_READ_WRITE_TOKEN=          # Vercel Blob, stores subscriptions and feed polling state
+                                # (required in production; see local testing below)
+```
+
+#### Testing push locally
+
+You do not need a Vercel Blob store to try this out. With no
+`BLOB_READ_WRITE_TOKEN`, the push store falls back to a JSON file under
+`.push-dev/` (gitignored). `next start` runs with `NODE_ENV=production`
+even on a laptop, so the fallback also needs an explicit opt-in:
+
+```
+PUSH_DEV_STORE=1
+```
+
+A real deployment never sets that, and production without a Blob token fails
+loudly rather than silently using a disk that serverless instances do not
+share — which would look like it worked and then lose every subscription.
+
+Then `npm run build && npm start`, subscribe from the Library screen, and
+trigger the cron by hand:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/push/send
 ```
 
 The cron at `/api/push/send` runs every two hours: it fetches each followed
