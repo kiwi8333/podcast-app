@@ -1,4 +1,5 @@
 import webpush from "web-push";
+import crypto from "node:crypto";
 import { readState, writeState } from "@/lib/push/store";
 import { parseFeed } from "@/lib/rssParser";
 
@@ -7,6 +8,15 @@ export const config = { maxDuration: 60 };
 const FEED_CONCURRENCY = 5;
 const SEND_CONCURRENCY = 10;
 const MAX_WRITE_ATTEMPTS = 3;
+
+// Constant-time compare, so response latency can't be used to walk the
+// secret. Hashing first keeps timingSafeEqual from throwing on a length
+// mismatch — which would leak the secret's length on its own.
+function timingSafeEqualStrings(a, b) {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const digest = (value) => crypto.createHash("sha256").update(value).digest();
+  return crypto.timingSafeEqual(digest(a), digest(b));
+}
 
 async function pool(items, limit, worker) {
   let cursor = 0;
@@ -20,7 +30,17 @@ export default async function handler(req, res) {
   // Vercel sends this header on cron-triggered requests when CRON_SECRET is
   // set. It is a real shared secret, unlike an "is this a cron" header,
   // which any caller could set themselves.
-  if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
+  //
+  // An unset CRON_SECRET used to be an open door: the expected value was
+  // built by interpolation, so with the variable missing this asked for the
+  // literal string "Bearer undefined" — which anyone can send. A missing
+  // secret now fails closed instead of accepting a guessable placeholder.
+  if (!process.env.CRON_SECRET) {
+    console.error("push/send: CRON_SECRET is not set; refusing to run.");
+    res.status(503).json({ error: "Push is not configured" });
+    return;
+  }
+  if (!timingSafeEqualStrings(req.headers.authorization, `Bearer ${process.env.CRON_SECRET}`)) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }

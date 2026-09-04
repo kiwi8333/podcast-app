@@ -1,6 +1,13 @@
 import { aiClient, AI_MODEL } from "@/lib/ai/client";
 import { allowRequest } from "@/lib/rateLimit";
 import { fetchTranscript, stripTimingMarkup } from "@/lib/ai/transcript";
+import {
+  clampText,
+  sanitizeHistory,
+  MAX_DESCRIPTION_CHARS,
+  MAX_QUESTION_CHARS,
+  MAX_TITLE_CHARS,
+} from "@/lib/ai/limits";
 
 const MAX_TRANSCRIPT_CHARS = 20000;
 
@@ -16,8 +23,14 @@ export default async function handler(req, res) {
   const { question, transcriptUrl, transcriptType, title, description, conversationHistory } =
     req.body || {};
 
-  if (!question || !transcriptUrl) {
+  if (typeof question !== "string" || !question.trim() || !transcriptUrl) {
     res.status(400).json({ error: "Missing question or transcriptUrl" });
+    return;
+  }
+  // Rejected rather than truncated: quietly answering a shorter question
+  // than the one that was asked is worse than saying no.
+  if (question.length > MAX_QUESTION_CHARS) {
+    res.status(400).json({ error: "That question is too long" });
     return;
   }
 
@@ -31,7 +44,7 @@ export default async function handler(req, res) {
   }
 
   const truncated = transcript.slice(0, MAX_TRANSCRIPT_CHARS);
-  const history = Array.isArray(conversationHistory) ? conversationHistory : [];
+  const history = sanitizeHistory(conversationHistory);
 
   try {
     const response = await aiClient.messages.create({
@@ -47,7 +60,11 @@ export default async function handler(req, res) {
       system: [
         {
           type: "text",
-          text: `Answer questions about this podcast episode using only the transcript below. If the answer isn't in the transcript, say so plainly rather than guessing.\n\nEpisode: ${title || "Untitled"}\n${description ? `Description: ${description}\n` : ""}\nTranscript:\n${truncated}`,
+          text: `Answer questions about this podcast episode using only the transcript below. If the answer isn't in the transcript, say so plainly rather than guessing.\n\nEpisode: ${clampText(title, MAX_TITLE_CHARS) || "Untitled"}\n${
+            description
+              ? `Description: ${clampText(description, MAX_DESCRIPTION_CHARS)}\n`
+              : ""
+          }\nTranscript:\n${truncated}`,
           cache_control: { type: "ephemeral" },
         },
       ],

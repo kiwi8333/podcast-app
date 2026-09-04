@@ -1,6 +1,7 @@
 import { aiClient, AI_MODEL } from "@/lib/ai/client";
 import { allowRequest } from "@/lib/rateLimit";
 import { fetchTranscript } from "@/lib/ai/transcript";
+import { clampText, MAX_TITLE_CHARS } from "@/lib/ai/limits";
 
 const MAX_TRANSCRIPT_CHARS = 40000;
 
@@ -67,7 +68,7 @@ export default async function handler(req, res) {
           },
         },
       },
-      system: `Identify natural topic-change points in this timed transcript (VTT or SRT format) and produce chapter markers. Convert each chapter's own cue timestamp to seconds for startTime — do not estimate or invent timestamps not present in the transcript. Give each chapter a short, descriptive title. Episode: ${title || "Untitled"}.`,
+      system: `Identify natural topic-change points in this timed transcript (VTT or SRT format) and produce chapter markers. Convert each chapter's own cue timestamp to seconds for startTime — do not estimate or invent timestamps not present in the transcript. Give each chapter a short, descriptive title. Episode: ${clampText(title, MAX_TITLE_CHARS) || "Untitled"}.`,
       messages: [{ role: "user", content: truncated }],
     });
 

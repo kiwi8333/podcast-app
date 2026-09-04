@@ -1,4 +1,7 @@
 import { parseFeed } from "@/lib/rssParser";
+import { allowRequest } from "@/lib/rateLimit";
+
+const PROXY_MAX_REQUESTS = 60;
 
 export default async function handler(req, res) {
   const { url } = req.query;
@@ -7,6 +10,9 @@ export default async function handler(req, res) {
     res.status(400).json({ error: "Missing url parameter" });
     return;
   }
+  // An open URL proxy. Generous enough that browsing never notices, low
+  // enough that nobody runs a scraper through this deployment for free.
+  if (!allowRequest(req, res, { max: PROXY_MAX_REQUESTS })) return;
 
   try {
     // Pass the caller's cached validators through to the origin. When the

@@ -1,5 +1,6 @@
 import { aiClient, AI_MODEL } from "@/lib/ai/client";
 import { allowRequest } from "@/lib/rateLimit";
+import { clampText, MAX_TITLE_CHARS } from "@/lib/ai/limits";
 
 const MAX_EPISODES = 20;
 const MAX_DESCRIPTION_LENGTH = 500;
@@ -20,16 +21,19 @@ export default async function handler(req, res) {
   }
 
   const capped = episodes.slice(0, MAX_EPISODES).map((e) => ({
-    podcastTitle: e.podcastTitle,
-    title: e.title,
-    pubDate: e.pubDate,
+    podcastTitle: clampText(e.podcastTitle, MAX_TITLE_CHARS),
+    title: clampText(e.title, MAX_TITLE_CHARS),
+    pubDate: clampText(e.pubDate, 64),
     description: (e.description || "").slice(0, MAX_DESCRIPTION_LENGTH),
   }));
 
   try {
     const response = await aiClient.messages.create({
       model: AI_MODEL,
-      max_tokens: 1024,
+      // 20 episodes grouped by show does not fit in 1024 tokens on a busy
+      // week, and the route reads the first text block either way — so the
+      // digest simply stopped mid-sentence with nothing to say it had.
+      max_tokens: 4000,
       thinking: { type: "adaptive" },
       output_config: { effort: "medium" },
       system:

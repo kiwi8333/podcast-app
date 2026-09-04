@@ -1,5 +1,6 @@
 import { aiClient, AI_MODEL } from "@/lib/ai/client";
 import { allowRequest } from "@/lib/rateLimit";
+import { clampText, MAX_DESCRIPTION_CHARS, MAX_TITLE_CHARS } from "@/lib/ai/limits";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -27,7 +28,9 @@ export default async function handler(req, res) {
       messages: [
         {
           role: "user",
-          content: `Podcast: ${podcastTitle || "Unknown"}\nEpisode: ${title || "Untitled"}\nDescription: ${description}`,
+          content: `Podcast: ${clampText(podcastTitle, MAX_TITLE_CHARS) || "Unknown"}\nEpisode: ${
+            clampText(title, MAX_TITLE_CHARS) || "Untitled"
+          }\nDescription: ${clampText(description, MAX_DESCRIPTION_CHARS)}`,
         },
       ],
     });

@@ -1,5 +1,6 @@
 import { aiClient, AI_MODEL } from "@/lib/ai/client";
 import { allowRequest } from "@/lib/rateLimit";
+import { clampText, MAX_QUESTION_CHARS, MAX_TITLE_CHARS } from "@/lib/ai/limits";
 
 const MAX_EPISODES = 100;
 const MAX_DESCRIPTION_LENGTH = 300;
@@ -14,14 +15,23 @@ export default async function handler(req, res) {
   if (!allowRequest(req, res)) return;
 
   const { query, episodes } = req.body || {};
-  if (!query || !Array.isArray(episodes) || episodes.length === 0) {
+  if (
+    typeof query !== "string" ||
+    !query.trim() ||
+    !Array.isArray(episodes) ||
+    episodes.length === 0
+  ) {
     res.status(200).json({ matches: [] });
+    return;
+  }
+  if (query.length > MAX_QUESTION_CHARS) {
+    res.status(400).json({ error: "That search is too long" });
     return;
   }
 
   const capped = episodes.slice(0, MAX_EPISODES).map((e) => ({
-    guid: e.guid,
-    title: e.title,
+    guid: clampText(e.guid, MAX_TITLE_CHARS),
+    title: clampText(e.title, MAX_TITLE_CHARS),
     description: (e.description || "").slice(0, MAX_DESCRIPTION_LENGTH),
   }));
 
