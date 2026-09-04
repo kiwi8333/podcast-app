@@ -1,0 +1,8 @@
+{
+  "crons": [
+    { "path": "/api/push/send", "schedule": "0 */2 * * *" }
+  ],
+  "functions": {
+    "pages/api/push/send.js": { "maxDuration": 60 }
+  }
+}

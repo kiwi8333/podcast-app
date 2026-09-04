@@ -28,6 +28,28 @@ ANTHROPIC_API_KEY=sk-ant-...
 
 The rest of the app works without it — those features just won't respond.
 
+### New-episode notifications (optional)
+
+Web push needs a few more variables, plus a deployment that can run the
+cron in `vercel.json` and reach Vercel Blob. Without them the toggle on the
+Library screen simply doesn't appear, and nothing else changes.
+
+Generate a VAPID key pair with `npx web-push generate-vapid-keys`, then set:
+
+```
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=   # exposed to the browser; it is the key the
+                                # browser encrypts to, so this is meant to be public
+VAPID_PUBLIC_KEY=               # same value, server side
+VAPID_PRIVATE_KEY=              # keep secret
+VAPID_SUBJECT=mailto:you@example.com
+CRON_SECRET=                    # Vercel sends this as a bearer token on cron requests
+BLOB_READ_WRITE_TOKEN=          # Vercel Blob, stores subscriptions and feed polling state
+```
+
+The cron at `/api/push/send` runs every two hours: it fetches each followed
+feed once (conditionally, so unchanged feeds cost a 304), then sends at most
+one notification per device per run rather than one per episode.
+
 You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
 [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.

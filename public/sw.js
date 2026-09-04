@@ -107,3 +107,48 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(networkFirst(request, PAGE_CACHE));
   }
 });
+
+// ---- Web push -------------------------------------------------------------
+
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+  let payload;
+  try {
+    payload = event.data.json();
+  } catch {
+    return; // not ours; nothing sensible to show
+  }
+  event.waitUntil(
+    self.registration.showNotification(payload.title || "New episode", {
+      body: payload.body || "",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      data: { url: payload.url || "/" },
+      // Collapses to one notification per app rather than stacking a
+      // separate row per delivery.
+      tag: "new-episodes",
+      renotify: true,
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const target = new URL(event.notification.data?.url || "/", self.location.origin).href;
+
+  event.waitUntil(
+    (async () => {
+      const clientList = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      // Focus an already-open tab and route it, rather than opening a second
+      // copy of the app on every notification tap.
+      for (const client of clientList) {
+        if (new URL(client.url).origin === self.location.origin) {
+          await client.focus();
+          if ("navigate" in client) await client.navigate(target);
+          return;
+        }
+      }
+      await self.clients.openWindow(target);
+    })()
+  );
+});
