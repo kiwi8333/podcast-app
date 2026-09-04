@@ -1,4 +1,6 @@
-import { assertPublicHttpUrl } from "@/lib/ssrfGuard";
+import { safeFetch, readCappedText } from "@/lib/ssrfGuard";
+
+const MAX_TRANSCRIPT_BYTES = 5 * 1024 * 1024;
 
 export default async function handler(req, res) {
   const { url } = req.query;
@@ -8,20 +10,20 @@ export default async function handler(req, res) {
     return;
   }
 
+  let upstream;
   try {
-    await assertPublicHttpUrl(url);
+    upstream = await safeFetch(url);
   } catch {
     res.status(400).json({ error: "Invalid transcript URL" });
     return;
   }
 
   try {
-    const upstream = await fetch(url);
     if (!upstream.ok) {
       res.status(502).json({ error: "Could not fetch transcript" });
       return;
     }
-    const text = await upstream.text();
+    const text = await readCappedText(upstream, MAX_TRANSCRIPT_BYTES);
     res.status(200).json({ text });
   } catch (err) {
     res.status(500).json({ error: "Could not load transcript" });

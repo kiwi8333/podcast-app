@@ -1,4 +1,5 @@
 import { aiClient, AI_MODEL } from "@/lib/ai/client";
+import { allowRequest } from "@/lib/rateLimit";
 import { fetchTranscript, stripTimingMarkup } from "@/lib/ai/transcript";
 
 const MAX_TRANSCRIPT_CHARS = 20000;
@@ -8,6 +9,9 @@ export default async function handler(req, res) {
     res.status(405).json({ error: "Method not allowed" });
     return;
   }
+
+  // These routes spend money per call on a key held by the deployment.
+  if (!allowRequest(req, res)) return;
 
   const { question, transcriptUrl, transcriptType, title, description, conversationHistory } =
     req.body || {};

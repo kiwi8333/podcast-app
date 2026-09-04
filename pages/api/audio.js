@@ -1,11 +1,13 @@
 import { Readable } from "stream";
-import { assertPublicHttpUrl } from "@/lib/ssrfGuard";
+import { safeFetch } from "@/lib/ssrfGuard";
 
 export const config = {
   api: {
     responseLimit: false,
   },
 };
+
+const AUDIO_TIMEOUT_MS = 30_000;
 
 export default async function handler(req, res) {
   const { url } = req.query;
@@ -15,15 +17,15 @@ export default async function handler(req, res) {
     return;
   }
 
+  let upstream;
   try {
-    await assertPublicHttpUrl(url);
+    upstream = await safeFetch(url, { timeoutMs: AUDIO_TIMEOUT_MS });
   } catch {
     res.status(400).json({ error: "Invalid audio URL" });
     return;
   }
 
   try {
-    const upstream = await fetch(url);
     if (!upstream.ok || !upstream.body) {
       res.status(502).json({ error: "Could not fetch audio" });
       return;

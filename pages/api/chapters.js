@@ -1,4 +1,6 @@
-import { assertPublicHttpUrl } from "@/lib/ssrfGuard";
+import { safeFetch, readCappedText } from "@/lib/ssrfGuard";
+
+const MAX_CHAPTERS_BYTES = 1 * 1024 * 1024;
 
 export default async function handler(req, res) {
   const { url } = req.query;
@@ -8,20 +10,22 @@ export default async function handler(req, res) {
     return;
   }
 
+  let upstream;
   try {
-    await assertPublicHttpUrl(url);
+    upstream = await safeFetch(url);
   } catch {
     res.status(400).json({ error: "Invalid chapters URL" });
     return;
   }
 
   try {
-    const upstream = await fetch(url);
     if (!upstream.ok) {
       res.status(502).json({ error: "Could not fetch chapters" });
       return;
     }
-    const data = await upstream.json();
+    // Read capped, then parse — response.json() would buffer the whole body
+    // before we ever got to check its size.
+    const data = JSON.parse(await readCappedText(upstream, MAX_CHAPTERS_BYTES));
     if (!Array.isArray(data.chapters)) {
       res.status(502).json({ error: "Chapters file has an unexpected shape" });
       return;
