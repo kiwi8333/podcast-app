@@ -1,0 +1,36 @@
+# Tests that nothing runs are tests that rot. The SSRF guard, the push
+# validators and the rate limiter are all hard to eyeball and easy to weaken
+# by accident, which is the case for checking them on every push rather than
+# only when someone remembers.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # The suite relies on ESM syntax detection for the extensionless
+          # .js modules under lib/, which needs Node 22 or newer.
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm test
+
+      # Catches the failures the unit tests cannot see — a bad import, a
+      # route that no longer compiles — before they reach a deploy.
+      - run: npm run build
+        env:
+          # The build must not depend on real credentials being present.
+          ANTHROPIC_API_KEY: ""
