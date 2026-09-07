@@ -10,7 +10,7 @@
     "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test \"test/*.test.mjs\""
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.117.1",
+    "@anthropic-ai/sdk": "^0.124.0",
     "@vercel/blob": "^2.8.0",
     "idb": "^8.0.3",
     "lucide-react": "^1.31.0",
