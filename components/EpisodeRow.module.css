@@ -1,88 +1,130 @@
-.row {
-  position: relative;
-  padding: var(--space-4) 0;
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-3);
+/* An episode is now a card rather than a row: fewer, larger items with room
+   for an excerpt, which suits deciding what to listen to more than scanning
+   a long index does. Filled and unbordered, like every other surface here. */
+.card {
+  border-radius: var(--radius-md);
+  background: var(--fill-quaternary);
+  overflow: hidden;
+  transition: background var(--duration-fast) var(--ease-out-ios);
 }
 
-/* Full-width here on purpose: an episode row's text starts at the leading
-   edge, so an inset rule would hang in space. */
-.row::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: var(--separator);
-  transform: scaleY(0.5);
-  transform-origin: bottom;
+/* The episode currently playing keeps a tinted edge rather than a whole
+   tinted card, which would fight the accent on its own Play button. */
+.cardPlaying {
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
-.row:last-child::after {
-  display: none;
+/* Full-bleed to the card's edges. 16:9 rather than the artwork's native
+   square: a square banner at this width would push the title off the screen
+   on a phone. */
+.banner {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--fill-tertiary);
 }
 
-.info {
-  min-width: 0;
+.body {
+  padding: var(--space-4);
+}
+
+.eyebrow {
+  font-size: var(--text-caption-2);
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--space-1);
 }
 
 .title {
+  font-size: var(--text-title-3);
   font-weight: 600;
-  font-size: var(--text-body);
-  letter-spacing: var(--tracking-body);
-  line-height: 1.3;
+  letter-spacing: var(--tracking-title);
+  line-height: 1.25;
+  text-wrap: balance;
 }
 
-.date {
-  font-size: var(--text-caption);
-  color: var(--secondary-label);
-  margin-top: var(--space-1);
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.badge {
-  padding: 1px var(--space-2);
-  border-radius: var(--radius-pill);
-  background: var(--fill-tertiary);
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--secondary-label);
-}
-
-.episodeArtwork {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-  float: left;
-  margin: 0 var(--space-3) var(--space-2) 0;
-  box-shadow: 0 0 0 0.5px var(--separator);
-}
-
+/* Three lines is enough to tell whether an episode is worth playing and
+   short enough that the cards stay comparable down the page. */
 .description {
   font-size: var(--text-footnote);
   color: var(--secondary-label);
-  margin: var(--space-2) 0 0;
-  max-width: 600px;
-  line-height: 1.45;
+  line-height: 1.5;
+  margin-top: var(--space-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  font-size: var(--text-caption);
+  color: var(--tertiary-label);
+  font-variant-numeric: tabular-nums;
+}
+
+.dot {
+  color: var(--tertiary-label);
 }
 
 .actions {
   display: flex;
-  gap: var(--space-2);
-  flex-shrink: 0;
-  height: 32px;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
 }
 
-/* Filled, not outlined. A row of bordered squares is the most webby thing a
-   list can have; iOS uses tinted circles and capsules for row actions. */
+.iconActions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* The card's primary action, so it is filled rather than tinted — the one
+   place on the card where the accent is solid. */
+.playButton {
+  height: 34px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--accent);
+  color: var(--accent-foreground);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: var(--text-subhead);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: transform var(--duration-fast) var(--ease-spring),
+    opacity var(--duration-fast) var(--ease-out-ios);
+}
+
+.playButton:active {
+  transform: scale(0.95);
+  opacity: 0.9;
+}
+
+.playButtonPlaying {
+  background: var(--fill-secondary);
+  color: var(--foreground);
+}
+
+.playButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .iconButton {
-  height: 32px;
-  width: 32px;
+  height: 34px;
+  width: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,13 +143,13 @@
 }
 
 .iconButton:disabled {
-  opacity: 0.4;
   cursor: not-allowed;
 }
 
-.iconButtonDownloaded {
+.iconButtonDone {
   color: var(--green);
   background: color-mix(in srgb, var(--green) 16%, transparent);
+  opacity: 1;
 }
 
 .spin {
@@ -120,35 +162,7 @@
   }
 }
 
-.playButton {
-  height: 32px;
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-pill);
-  border: none;
-  background: var(--accent-tint);
-  color: var(--accent);
-  cursor: pointer;
-  font-weight: 600;
-  font-size: var(--text-footnote);
-  transition: transform var(--duration-fast) var(--ease-spring),
-    background var(--duration-fast) var(--ease-out-ios);
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-}
-
-.playButton:active {
-  transform: scale(0.94);
-  background: var(--accent);
-  color: var(--accent-foreground);
-}
-
-.playButtonPlaying {
-  background: var(--fill-tertiary);
-  color: var(--foreground);
-}
-
-.playButton:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+/* Only takes space once something inside it opens. */
+.extras:not(:empty) {
+  margin-top: var(--space-3);
 }
