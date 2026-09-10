@@ -35,7 +35,15 @@ to set — `/api/radio` reads the [Radio Browser](https://api.radio-browser.info
 community directory server-side, caches the result at the edge for an hour and
 hands the app a cleaned list.
 
-Two filters do most of the work, and both matter:
+The country code is treated as a candidate list, not as proof. It is
+community-set and its Ghana listing verifiably carries stations from
+elsewhere — a Croatian station, an Arabic Quran channel, a Tamil Christian
+station and two lo-fi music streams. Every station must show at least one
+piece of Ghanaian evidence to be listed: a Ghanaian language tag, a Ghanaian
+place name, a `.gh` domain, a streaming host that carries only Ghanaian
+broadcasters, or a homepage on a short hand-verified list.
+
+Two more filters apply on top of that, and both matter:
 
 - **https only.** The app is served over https, so an `http://` stream is
   blocked as mixed content and fails silently. Those entries are dropped
@@ -44,9 +52,12 @@ Two filters do most of the work, and both matter:
   failing that probe have usually moved or shut down.
 
 What is left is sorted by votes and de-duplicated, since the same station is
-often submitted more than once under different casing. The directory is
-community-edited, so a few entries are mislabelled or not Ghanaian — the vote
-ordering keeps them well down the list.
+often submitted more than once under different casing. Of 85 healthy https
+entries in the Ghana listing, 64 currently qualify.
+
+A station with no Ghanaian evidence at all is not listed, even where it may
+well be Ghanaian — the tab is meant to hold Ghanaian stations only, so an
+unverifiable entry is left out rather than guessed at.
 
 Stations play through the normal player, marked `isLive`, which is what
 suppresses resume-position saving, the scrubber, the speed control and
