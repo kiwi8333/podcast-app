@@ -1,0 +1,94 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.text {
+  font-size: var(--font-size-xs);
+  color: var(--muted-text);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* Keeps the Share and Plus glyphs sitting on the text baseline instead of
+   riding above it, which is what an inline SVG does by default. */
+.inlineIcon {
+  vertical-align: -2px;
+}
+
+.install {
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 var(--space-3);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--accent-foreground);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.install:active {
+  transform: scale(0.96);
+}
+
+.dismiss {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted-text);
+  cursor: pointer;
+}
+
+.dismiss:hover {
+  background: var(--border);
+}
+
+@media (max-width: 420px) {
+  /* Three controls plus two lines of text will not sit on one row on a small
+     phone; the text wraps under the icon and the buttons keep their size. */
+  .banner {
+    flex-wrap: wrap;
+  }
+
+  .body {
+    flex-basis: 100%;
+    order: 3;
+  }
+}

@@ -28,6 +28,32 @@ ANTHROPIC_API_KEY=sk-ant-...
 
 The rest of the app works without it — those features just won't respond.
 
+### Installing it on a phone
+
+The app is a PWA, so it installs from the browser rather than a store, and
+the installed copy keeps its own downloads and offline cache.
+
+- **Android / Chrome** — a banner offers an Install button, or use the
+  browser menu. The prompt is captured from `beforeinstallprompt` and
+  replayed from our own button.
+- **iPhone / iPad** — iOS offers no install API at all, so the banner instead
+  shows where the button is: Share, then Add to Home Screen. It must be
+  Safari; other iOS browsers do not always offer it.
+
+Dismissing the banner is remembered for 30 days, and it never appears once
+the app is already installed. That decision is `shouldOffer` in
+`lib/install.js`, kept pure so it can be tested without a browser.
+
+Icons come in two flavours and both matter. The plain ones are drawn as-is;
+the `icon-maskable-*` pair exists because Android crops an installed icon to
+whatever shape the launcher uses and may take the outer 10%, so the mark is
+scaled to sit inside the safe circle. Regenerate both from their SVG sources
+with:
+
+```bash
+node scripts/gen-icons.mjs
+```
+
 ### Ghana radio
 
 The Radio tab lists live Ghanaian stations. There is no key or configuration

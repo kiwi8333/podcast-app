@@ -6,6 +6,7 @@ import styles from "./App.module.css";
 import { PlayerProvider } from "@/components/Player/PlayerContext";
 import AudioPlayer from "@/components/Player/AudioPlayer";
 import TabBar from "@/components/TabBar";
+import InstallPrompt from "@/components/InstallPrompt";
 import ScreenHeader from "@/components/ScreenHeader";
 import { useFavoritesList } from "@/lib/favorites";
 
@@ -59,6 +60,10 @@ export default function App({ Component, pageProps }) {
             for its empty state, so a per-page header would vanish exactly when
             an empty screen most needs a label. */}
         <ScreenHeader />
+        {/* Inline in the shell rather than a floating bar: the player and tab
+            bar already own the bottom of the screen, and a third fixed layer
+            would sit on top of one of them. */}
+        <InstallPrompt />
         <div className={`${styles.page} ${transitioning ? styles.pageTransitioning : ""}`}>
           <Component {...pageProps} />
         </div>

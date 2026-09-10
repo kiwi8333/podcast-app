@@ -1,0 +1,26 @@
+<!-- Maskable variant of icon-source.svg. Android crops an installed icon to
+     whatever shape the launcher uses - circle, squircle, rounded square - and
+     may take the outer 10% on every side. Anything outside the central circle
+     of 80% diameter is therefore not guaranteed to survive.
+
+     Same full-bleed gradient so there is no transparent edge to crop into,
+     with the mark scaled to 78% about the centre so it sits inside that safe
+     circle with room to spare. Keeping this as its own source, rather than
+     scaling the shared one, is what stops a future edit to the app icon from
+     silently pushing the mark outside the safe zone. -->
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0A84FF"/>
+      <stop offset="1" stop-color="#5E5CE6"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <g transform="translate(256 256) scale(0.78) translate(-256 -256)">
+    <g fill="none" stroke="#FFFFFF" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="212" y="106" width="88" height="176" rx="44" fill="#FFFFFF" stroke="none"/>
+      <path d="M154 240 v18 a102 102 0 0 0 204 0 v-18"/>
+      <line x1="256" y1="360" x2="256" y2="416"/>
+    </g>
+  </g>
+</svg>
