@@ -1,20 +1,61 @@
+/* Bleeds past the shell's horizontal padding so the blur reaches the screen
+   edges the way a UINavigationBar does, then puts that padding back inside
+   itself so the title still lines up with the content below. */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin: calc(-1 * (var(--space-4) + env(safe-area-inset-top))) calc(-1 * var(--space-4)) 0;
+  padding: env(safe-area-inset-top) var(--space-4) 0;
+  background: var(--bar-background);
+  -webkit-backdrop-filter: var(--bar-blur);
+  backdrop-filter: var(--bar-blur);
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-out-ios);
+  pointer-events: none;
+}
+
+.barVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The hairline belongs to the bar, not the page, so it appears only once the
+   bar itself does. */
+.barVisible::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0.5px;
+  background: var(--separator);
+}
+
+.barLeading {
+  justify-content: flex-start;
+}
+
+.barTitle {
+  font-size: var(--text-body);
+  font-weight: 600;
+  letter-spacing: var(--tracking-body);
+}
+
 .largeHeader {
-  padding: var(--space-2) 0 var(--space-4);
+  padding: var(--space-1) 0 var(--space-4);
 }
 
 /* iOS Large Title: 34pt, bold, tight tracking. */
 .largeTitle {
-  font-size: 34px;
+  font-size: var(--text-large-title);
   font-weight: 700;
-  letter-spacing: -0.022em;
-  line-height: 1.1;
-}
-
-.compactHeader {
-  display: flex;
-  align-items: center;
-  min-height: 44px; /* iOS minimum touch target */
-  margin-bottom: var(--space-2);
+  letter-spacing: var(--tracking-large-title);
+  line-height: 1.12;
 }
 
 .backButton {
@@ -26,11 +67,11 @@
   border: 0;
   background: none;
   color: var(--accent);
-  font-size: var(--font-size-md);
+  font-size: var(--text-body);
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  transition: opacity var(--duration-fast) var(--ease-out-ios);
 }
 
 .backButton:active {
-  opacity: 0.4;
+  opacity: 0.35;
 }

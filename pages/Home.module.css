@@ -1,11 +1,14 @@
+/* Rows carry their own separators now, so the list has no gap between them —
+   a run of rows divided by hairlines, the way a table view reads. */
 .results {
   margin-top: var(--space-5);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
 }
 
 .status {
-  color: var(--muted-text);
-  font-size: var(--font-size-sm);
+  color: var(--secondary-label);
+  font-size: var(--text-subhead);
+  text-align: center;
+  padding: var(--space-5) 0;
 }

@@ -1,17 +1,33 @@
+/* Floats above the tab bar as a rounded card, the way the Music and Podcasts
+   mini-players dock, rather than sitting as a full-width bar with a border.
+   The inset and the shadow are what make it read as a layer above the list
+   instead of another band of chrome attached to it. */
 .bar {
   position: fixed;
-  /* Rides directly above the tab bar rather than under it, the way the iOS
-     Music/Podcasts mini-player docks to the tab bar. */
-  bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom));
-  left: 0;
-  right: 0;
-  background: var(--bar-background);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(180%) blur(20px);
-  color: var(--foreground);
-  border-top: 0.5px solid var(--border);
+  bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom) + var(--space-2));
+  left: var(--space-2);
+  right: var(--space-2);
   z-index: 100;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--bar-background);
+  -webkit-backdrop-filter: var(--bar-blur);
+  backdrop-filter: var(--bar-blur);
+  box-shadow: var(--shadow-card);
+  color: var(--foreground);
+  animation: rise var(--duration-base) var(--ease-out-ios);
+}
+
+/* Slides up from behind the tab bar the first time something plays. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .inner {
@@ -19,7 +35,7 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
 .topRow {
@@ -34,6 +50,9 @@
   border-radius: var(--radius-sm);
   object-fit: cover;
   flex-shrink: 0;
+  /* Artwork often arrives light-on-light; a hairline keeps its edge defined
+     without drawing a visible border. */
+  box-shadow: 0 0 0 0.5px var(--separator);
 }
 
 .info {
@@ -42,36 +61,45 @@
 }
 
 .title {
-  font-size: var(--font-size-sm);
+  font-size: var(--text-subhead);
   font-weight: 600;
+  letter-spacing: var(--tracking-body);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .podcastTitle {
-  font-size: var(--font-size-xs);
-  color: var(--muted-text);
+  font-size: var(--text-caption);
+  color: var(--secondary-label);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-top: 1px;
 }
 
+/* Tinted rather than outlined: iOS uses a filled capsule for a small control
+   like this, and an outline here reads as a web button. */
 .speedButton {
   flex-shrink: 0;
-  height: 30px;
+  height: 28px;
+  min-width: 44px;
   padding: 0 var(--space-2);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--background);
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--fill-tertiary);
   color: var(--foreground);
-  font-size: var(--font-size-xs);
+  font-size: var(--text-caption);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out-ios),
+    background var(--duration-fast) var(--ease-out-ios);
 }
 
-.speedButton:hover {
-  background: var(--border);
+.speedButton:active {
+  transform: scale(0.92);
+  background: var(--fill-secondary);
 }
 
 .controlsRow {
@@ -85,30 +113,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-pill);
   border: none;
   background: transparent;
   color: var(--foreground);
   cursor: pointer;
   position: relative;
-  transition: transform 0.1s ease, background 0.15s ease;
-}
-
-.iconButton:hover {
-  background: var(--border);
+  transition: transform var(--duration-fast) var(--ease-out-ios),
+    background var(--duration-fast) var(--ease-out-ios);
 }
 
 .iconButton:active {
-  transform: scale(0.92);
+  transform: scale(0.88);
+  background: var(--fill-quaternary);
 }
 
 .skipBadge {
   position: absolute;
   font-size: 9px;
   font-weight: 700;
-  top: 52%;
+  top: 53%;
   left: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
@@ -121,57 +147,75 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: none;
   background: var(--accent);
   color: var(--accent-foreground);
   cursor: pointer;
-  transition: transform 0.1s ease, opacity 0.15s ease;
-}
-
-.playButton:hover {
-  opacity: 0.85;
+  transition: transform var(--duration-fast) var(--ease-spring),
+    opacity var(--duration-fast) var(--ease-out-ios);
 }
 
 .playButton:active {
-  transform: scale(0.94);
+  transform: scale(0.9);
+  opacity: 0.9;
 }
 
 .time {
-  font-size: var(--font-size-xs);
-  color: var(--muted-text);
+  font-size: var(--text-caption-2);
+  color: var(--secondary-label);
   flex-shrink: 0;
   min-width: 38px;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
 
+/* An iOS scrubber is a hairline track with a small thumb that grows while
+   dragged; the default range control is none of those things. */
 .scrubber {
   flex: 1;
   min-width: 0;
   appearance: none;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--border);
+  -webkit-appearance: none;
+  height: 20px;
+  background: transparent;
   cursor: pointer;
+}
+
+.scrubber::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--fill-tertiary);
+}
+
+.scrubber::-moz-range-track {
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--fill-tertiary);
 }
 
 .scrubber::-webkit-slider-thumb {
-  appearance: none;
-  width: 14px;
-  height: 14px;
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -4px;
   border-radius: 50%;
-  background: var(--accent);
-  cursor: pointer;
+  background: var(--foreground);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform var(--duration-fast) var(--ease-out-ios);
+}
+
+.scrubber:active::-webkit-slider-thumb {
+  transform: scale(1.35);
 }
 
 .scrubber::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--accent);
+  width: 12px;
+  height: 12px;
   border: none;
-  cursor: pointer;
+  border-radius: 50%;
+  background: var(--foreground);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .liveBadge {
@@ -180,26 +224,19 @@
   gap: 4px;
   flex-shrink: 0;
   padding: 3px var(--space-2);
-  border-radius: var(--radius-sm);
-  /* Red rather than the app accent: this is a state indicator, not
-     something to tap, and the accent everywhere else means "control". */
-  background: #d70015;
+  border-radius: var(--radius-pill);
+  /* Red rather than the app accent: this is a state indicator, not something
+     to tap, and the accent everywhere else means "control". */
+  background: var(--red);
   color: #ffffff;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
 }
 
-@media (prefers-color-scheme: dark) {
-  .liveBadge {
-    background: #ff453a;
-    color: #1d1d1f;
-  }
-}
-
 .liveStatus {
-  font-size: var(--font-size-xs);
-  color: var(--muted-text);
+  font-size: var(--text-caption);
+  color: var(--secondary-label);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

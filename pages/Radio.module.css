@@ -1,26 +1,38 @@
 .intro {
-  font-size: var(--font-size-sm);
-  color: var(--muted-text);
+  font-size: var(--text-footnote);
+  color: var(--secondary-label);
   margin-bottom: var(--space-4);
   line-height: 1.45;
 }
 
+/* Matches the search field on Home so the two screens read as one app. */
 .filter {
   width: 100%;
-  height: 38px;
+  height: 36px;
   padding: 0 var(--space-3);
   margin-bottom: var(--space-2);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
+  border: none;
+  background: var(--fill-tertiary);
   color: var(--foreground);
   font-family: inherit;
-  font-size: var(--font-size-base);
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
+  outline: none;
+  transition: background var(--duration-fast) var(--ease-out-ios);
+}
+
+.filter::placeholder {
+  color: var(--secondary-label);
 }
 
 .filter:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: -1px;
+  background: var(--fill-secondary);
+}
+
+.filter::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .list {
@@ -29,11 +41,24 @@
 }
 
 .skeletonRow {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-3) 0;
-  border-bottom: 0.5px solid var(--border);
+  padding: var(--space-2) 0;
+  min-height: 60px;
+}
+
+.skeletonRow::after {
+  content: "";
+  position: absolute;
+  left: calc(48px + var(--space-3));
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--separator);
+  transform: scaleY(0.5);
+  transform-origin: bottom;
 }
 
 .skeletonText {
@@ -42,15 +67,15 @@
 }
 
 .status {
-  font-size: var(--font-size-sm);
-  color: var(--muted-text);
+  font-size: var(--text-subhead);
+  color: var(--secondary-label);
   padding: var(--space-5) 0;
   text-align: center;
 }
 
 .footnote {
-  font-size: var(--font-size-xs);
-  color: var(--muted-text);
+  font-size: var(--text-caption);
+  color: var(--tertiary-label);
   padding: var(--space-4) 0;
   line-height: 1.45;
 }

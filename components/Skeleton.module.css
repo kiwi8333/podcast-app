@@ -1,15 +1,35 @@
+/* Two fills rather than a colour-to-colour gradient: the tokens are
+   translucent now, so a gradient between them would show the page through
+   the shimmer instead of sweeping across it. */
 .skeleton {
-  background: linear-gradient(90deg, var(--surface) 25%, var(--border) 37%, var(--surface) 63%);
-  background-size: 400% 100%;
-  animation: shimmer 1.4s ease infinite;
+  position: relative;
+  overflow: hidden;
+  background: var(--fill-quaternary);
   border-radius: var(--radius-sm);
 }
 
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--fill-tertiary) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: shimmer 1.4s var(--ease-out-ios) infinite;
+}
+
 @keyframes shimmer {
-  0% {
-    background-position: 100% 50%;
+  to {
+    transform: translateX(100%);
   }
-  100% {
-    background-position: 0 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    display: none;
   }
 }

@@ -1,11 +1,43 @@
+/* iOS semantic colours, near enough to the real system values that the app
+   reads as native rather than as a web page wearing a tab bar.
+   Three things carry most of that impression:
+
+   1. Text and separators are translucent, not solid greys. iOS labels are
+      black at an opacity, so they sit correctly on any background they end
+      up over — which is what stops a "grey" from looking wrong the moment
+      the surface behind it changes.
+   2. Fills are translucent too, so a chip or card tints whatever is behind
+      it instead of painting a flat panel over it.
+   3. Almost nothing has a border. iOS separates content with a hairline
+      between rows, inset to the text, and otherwise relies on fills. */
 :root {
-  --background: #ffffff;
-  --surface: #f5f5f7;
-  --foreground: #1d1d1f;
-  --muted-text: #6e6e73;
-  --border: #d2d2d7;
-  --accent: #007aff;
+  color-scheme: light;
+
+  --background: #ffffff;              /* systemBackground */
+  --background-grouped: #f2f2f7;      /* systemGroupedBackground */
+  --background-elevated: #ffffff;     /* cards on a grouped background */
+
+  --foreground: #000000;              /* label */
+  --secondary-label: rgba(60, 60, 67, 0.6);
+  --tertiary-label: rgba(60, 60, 67, 0.3);
+  --muted-text: var(--secondary-label);
+
+  /* systemFill through quaternary. Chips, inactive controls, placeholders. */
+  --fill: rgba(120, 120, 128, 0.2);
+  --fill-secondary: rgba(120, 120, 128, 0.16);
+  --fill-tertiary: rgba(118, 118, 128, 0.12);
+  --fill-quaternary: rgba(116, 116, 128, 0.08);
+  --surface: var(--fill-quaternary);
+
+  --separator: rgba(60, 60, 67, 0.29);
+  --separator-opaque: #c6c6c8;
+  --border: var(--separator);
+
+  --accent: #007aff;                  /* systemBlue */
   --accent-foreground: #ffffff;
+  --accent-tint: rgba(0, 122, 255, 0.12);
+  --green: #34c759;
+  --red: #ff3b30;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -14,38 +46,88 @@
   --space-5: 24px;
   --space-6: 32px;
 
-  --font-size-xs: 12px;
-  --font-size-sm: 13px;
-  --font-size-base: 15px;
-  --font-size-md: 17px;
-  --font-size-lg: 20px;
-  --font-size-xl: 28px;
+  /* The SF text styles, by their Apple names. The older numeric aliases are
+     kept below so existing rules keep working. */
+  --text-large-title: 34px;
+  --text-title-1: 28px;
+  --text-title-2: 22px;
+  --text-title-3: 20px;
+  --text-body: 17px;
+  --text-callout: 16px;
+  --text-subhead: 15px;
+  --text-footnote: 13px;
+  --text-caption: 12px;
+  --text-caption-2: 11px;
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  --font-size-xs: var(--text-caption);
+  --font-size-sm: var(--text-footnote);
+  --font-size-base: var(--text-subhead);
+  --font-size-md: var(--text-body);
+  --font-size-lg: var(--text-title-3);
+  --font-size-xl: var(--text-title-1);
 
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
-    Roboto, Helvetica, Arial, sans-serif;
+  /* SF tightens as it gets larger; leaving tracking at 0 is most of why a
+     34px heading in a web font looks loose next to the real thing. */
+  --tracking-large-title: -0.022em;
+  --tracking-title: -0.019em;
+  --tracking-body: -0.011em;
 
-  /* iOS tab bars are translucent over the content behind them; the solid
-     variant is for anything that has to paint over that blur, like a badge
-     ring. */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* UIKit's default curve. Decelerates hard and never overshoots, which is
+     what separates an iOS transition from a generic ease. */
+  --ease-out-ios: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 350ms;
+
+  /* Wide and faint. An iOS shadow suggests a layer above; it is not a drop
+     shadow you are meant to notice. */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-raised: 0 2px 8px rgba(0, 0, 0, 0.08), 0 16px 40px rgba(0, 0, 0, 0.1);
+
   --tab-bar-height: 49px;
-  --bar-background: rgba(249, 249, 249, 0.82);
+  --bar-background: rgba(249, 249, 249, 0.8);
   --bar-background-solid: #f9f9f9;
+  --bar-blur: saturate(180%) blur(20px);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    color-scheme: dark;
+
     --background: #000000;
-    --surface: #1c1c1e;
-    --foreground: #f5f5f7;
-    --muted-text: #98989d;
-    --border: #38383a;
+    --background-grouped: #000000;
+    --background-elevated: #1c1c1e;
+
+    --foreground: #ffffff;
+    --secondary-label: rgba(235, 235, 245, 0.6);
+    --tertiary-label: rgba(235, 235, 245, 0.3);
+
+    --fill: rgba(120, 120, 128, 0.36);
+    --fill-secondary: rgba(120, 120, 128, 0.32);
+    --fill-tertiary: rgba(118, 118, 128, 0.24);
+    --fill-quaternary: rgba(116, 116, 128, 0.18);
+
+    --separator: rgba(84, 84, 88, 0.65);
+    --separator-opaque: #38383a;
+
     --accent: #0a84ff;
-    --accent-foreground: #ffffff;
-    --bar-background: rgba(22, 22, 24, 0.82);
+    --accent-tint: rgba(10, 132, 255, 0.18);
+    --green: #30d158;
+    --red: #ff453a;
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-raised: 0 2px 8px rgba(0, 0, 0, 0.4), 0 16px 40px rgba(0, 0, 0, 0.5);
+
+    --bar-background: rgba(22, 22, 24, 0.8);
     --bar-background-solid: #161618;
   }
 }
@@ -60,9 +142,15 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-sans);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-md);
+  letter-spacing: var(--tracking-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Stops the grey flash iOS paints over anything tapped. Every interactive
+     element here has its own press state. */
+  -webkit-tap-highlight-color: transparent;
+  /* Rubber-band scrolling on the page, not inside it. */
+  overscroll-behavior-y: none;
 }
 
 * {
@@ -78,12 +166,13 @@ a {
 
 button {
   font-family: inherit;
+  letter-spacing: inherit;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -93,5 +182,6 @@ button {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }

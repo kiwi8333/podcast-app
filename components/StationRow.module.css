@@ -2,8 +2,27 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-3) 0;
-  border-bottom: 0.5px solid var(--border);
+  padding: var(--space-2) 0;
+  min-height: 60px;
+  position: relative;
+}
+
+/* Inset to where the text starts, not the full width of the screen — the
+   detail that most distinguishes an iOS list from a web one. */
+.row::after {
+  content: "";
+  position: absolute;
+  left: calc(48px + var(--space-3));
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--separator);
+  transform: scaleY(0.5);
+  transform-origin: bottom;
+}
+
+.row:last-child::after {
+  display: none;
 }
 
 .rowCurrent .name {
@@ -15,11 +34,12 @@
   width: 48px;
   height: 48px;
   border-radius: var(--radius-sm);
-  background: var(--surface);
+  background: var(--fill-tertiary);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  box-shadow: 0 0 0 0.5px var(--separator);
 }
 
 .logo {
@@ -30,7 +50,7 @@
 }
 
 .logoFallback {
-  color: var(--muted-text);
+  color: var(--secondary-label);
 }
 
 .info {
@@ -39,20 +59,21 @@
 }
 
 .name {
-  font-size: var(--font-size-base);
-  font-weight: 600;
+  font-size: var(--text-body);
+  font-weight: 500;
+  letter-spacing: var(--tracking-body);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .meta {
-  font-size: var(--font-size-xs);
-  color: var(--muted-text);
+  font-size: var(--text-footnote);
+  color: var(--secondary-label);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .playButton {
@@ -60,20 +81,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
   border: none;
-  background: var(--accent);
-  color: var(--accent-foreground);
+  background: var(--accent-tint);
+  color: var(--accent);
   cursor: pointer;
-  transition: transform 0.1s ease, opacity 0.15s ease;
-}
-
-.playButton:hover {
-  opacity: 0.85;
+  transition: transform var(--duration-fast) var(--ease-spring),
+    background var(--duration-fast) var(--ease-out-ios);
 }
 
 .playButton:active {
-  transform: scale(0.94);
+  transform: scale(0.88);
+  background: var(--accent);
+  color: var(--accent-foreground);
 }

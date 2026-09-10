@@ -1,7 +1,6 @@
 .list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
 }
 
 .row {
@@ -16,19 +15,35 @@
 }
 
 .downloadRow {
+  position: relative;
   display: flex;
   gap: var(--space-3);
   align-items: center;
-  padding: var(--space-3);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  padding: var(--space-3) 0;
+  min-height: 68px;
+}
+
+.downloadRow::after {
+  content: "";
+  position: absolute;
+  left: calc(56px + var(--space-3));
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--separator);
+  transform: scaleY(0.5);
+  transform-origin: bottom;
+}
+
+.downloadRow:last-child::after {
+  display: none;
 }
 
 .artwork {
   border-radius: var(--radius-sm);
   object-fit: cover;
   flex-shrink: 0;
+  box-shadow: 0 0 0 0.5px var(--separator);
 }
 
 .info {
@@ -37,67 +52,72 @@
 }
 
 .title {
-  font-weight: 600;
+  font-weight: 500;
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .subtitle {
-  font-size: var(--font-size-sm);
-  color: var(--muted-text);
+  font-size: var(--text-footnote);
+  color: var(--secondary-label);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-top: 1px;
 }
 
 .playButton {
-  height: 36px;
-  padding: 0 var(--space-4);
-  border-radius: var(--radius-sm);
+  height: 32px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
   border: none;
-  background: var(--accent);
-  color: var(--accent-foreground);
+  background: var(--accent-tint);
+  color: var(--accent);
   cursor: pointer;
   font-weight: 600;
+  font-size: var(--text-footnote);
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  transition: opacity 0.15s ease, transform 0.1s ease;
-}
-
-.playButton:hover {
-  opacity: 0.85;
+  transition: transform var(--duration-fast) var(--ease-spring),
+    background var(--duration-fast) var(--ease-out-ios);
 }
 
 .playButton:active {
-  transform: scale(0.97);
+  transform: scale(0.94);
+  background: var(--accent);
+  color: var(--accent-foreground);
 }
 
 .playButtonPlaying {
-  background: var(--muted-text);
-}
-
-.removeButton {
-  height: 36px;
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
+  background: var(--fill-tertiary);
   color: var(--foreground);
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
 }
 
-.removeButton:hover {
-  background: var(--border);
+/* Destructive actions are red and unfilled in iOS, not another grey box. */
+.removeButton {
+  height: 32px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  border: none;
+  background: transparent;
+  color: var(--red);
+  font-size: var(--text-footnote);
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity var(--duration-fast) var(--ease-out-ios);
 }
 
 .removeButton:active {
-  transform: scale(0.96);
+  opacity: 0.4;
 }
 
 .status {
-  color: var(--muted-text);
-  font-size: var(--font-size-sm);
+  color: var(--secondary-label);
+  font-size: var(--text-subhead);
+  text-align: center;
+  padding: var(--space-5) 0;
 }

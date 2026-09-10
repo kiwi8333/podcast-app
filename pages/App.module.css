@@ -1,14 +1,19 @@
 .shell {
   max-width: 720px;
   margin: 0 auto;
-  /* Top padding respects the status bar in an installed PWA. */
+  /* Top padding respects the status bar in an installed PWA. The bottom
+     clears the tab bar plus the floating player card that docks above it —
+     the card is roughly 116px tall and sits 8px clear of the bar, so this
+     leaves the last row reachable rather than parked under the player. */
   padding: calc(var(--space-4) + env(safe-area-inset-top)) var(--space-4)
-    calc(100px + var(--tab-bar-height) + env(safe-area-inset-bottom));
+    calc(140px + var(--tab-bar-height) + env(safe-area-inset-bottom));
 }
 
+/* Cross-fade on navigation. Short and asymmetric on purpose: a slow fade
+   between screens reads as latency, not as polish. */
 .page {
   opacity: 1;
-  transition: opacity 0.15s ease;
+  transition: opacity var(--duration-fast) var(--ease-out-ios);
 }
 
 .pageTransitioning {

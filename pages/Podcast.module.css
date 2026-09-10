@@ -1,19 +1,24 @@
 .back {
-  color: var(--muted-text);
-  font-size: var(--font-size-sm);
+  color: var(--accent);
+  font-size: var(--text-subhead);
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
+  transition: opacity var(--duration-fast) var(--ease-out-ios);
 }
 
-.back:hover {
-  color: var(--foreground);
+.back:active {
+  opacity: 0.4;
 }
 
+/* Artwork over a centred title, the way a show page opens in Podcasts,
+   rather than a left-aligned row of details. */
 .header {
   display: flex;
-  gap: var(--space-4);
+  flex-direction: column;
   align-items: center;
+  text-align: center;
+  gap: var(--space-3);
   margin: var(--space-4) 0 var(--space-5);
 }
 
@@ -21,65 +26,70 @@
   border-radius: var(--radius-md);
   object-fit: cover;
   flex-shrink: 0;
+  box-shadow: 0 0 0 0.5px var(--separator), var(--shadow-raised);
 }
 
 .meta {
-  flex: 1;
   min-width: 0;
+  width: 100%;
 }
 
 .title {
-  font-size: var(--font-size-xl);
+  font-size: var(--text-title-2);
+  font-weight: 700;
+  letter-spacing: var(--tracking-title);
+  line-height: 1.2;
   margin: 0;
 }
 
 .episodeCount {
-  color: var(--muted-text);
+  color: var(--secondary-label);
   margin-top: var(--space-1);
-  font-size: var(--font-size-sm);
+  font-size: var(--text-footnote);
 }
 
+/* Tinted capsule, filling solid once subscribed — the Follow/Following
+   pattern, where the filled state is the committed one. */
 .subscribeButton {
-  height: 36px;
-  padding: 0 var(--space-4);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--foreground);
+  height: 34px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--accent-tint);
+  color: var(--accent);
   cursor: pointer;
   flex-shrink: 0;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--space-1);
   font-weight: 600;
-  transition: transform 0.1s ease, background 0.15s ease;
-}
-
-.subscribeButton:hover {
-  background: var(--border);
+  font-size: var(--text-subhead);
+  transition: transform var(--duration-fast) var(--ease-spring),
+    background var(--duration-fast) var(--ease-out-ios);
 }
 
 .subscribeButton:active {
-  transform: scale(0.97);
+  transform: scale(0.95);
 }
 
 .subscribeButtonActive {
-  border: none;
   background: var(--accent);
   color: var(--accent-foreground);
 }
 
 .status {
-  color: var(--muted-text);
-  font-size: var(--font-size-sm);
+  color: var(--secondary-label);
+  font-size: var(--text-subhead);
+  text-align: center;
+  padding: var(--space-5) 0;
 }
 
 /* Matches the iOS large title used by ScreenHeader on the tab screens, so a
    category reads as the same kind of heading rather than an inline one-off. */
 .categoryTitle {
-  font-size: 34px;
+  font-size: var(--text-large-title);
   font-weight: 700;
-  letter-spacing: -0.022em;
-  line-height: 1.1;
-  margin: var(--space-2) 0 var(--space-4);
+  letter-spacing: var(--tracking-large-title);
+  line-height: 1.12;
+  margin: var(--space-1) 0 var(--space-4);
 }

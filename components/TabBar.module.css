@@ -3,16 +3,29 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 200; /* above the player bar */
+  z-index: 200; /* above the player card */
   display: flex;
   align-items: stretch;
   height: calc(var(--tab-bar-height) + env(safe-area-inset-bottom));
   /* Keeps the tabs clear of the home indicator on a notched iPhone. */
   padding-bottom: env(safe-area-inset-bottom);
-  border-top: 0.5px solid var(--border); /* iOS hairline */
   background: var(--bar-background);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: var(--bar-blur);
+  backdrop-filter: var(--bar-blur);
+}
+
+/* A real hairline. A 1px border is two device pixels on a phone and reads as
+   a drawn line; scaling a 1px element down gives the thinner rule iOS uses. */
+.tabBar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--separator);
+  transform: scaleY(0.5);
+  transform-origin: top;
 }
 
 .tab {
@@ -21,10 +34,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  color: var(--muted-text);
-  -webkit-tap-highlight-color: transparent;
-  transition: color 0.15s ease;
+  gap: 3px;
+  color: var(--secondary-label);
+  transition: color var(--duration-fast) var(--ease-out-ios),
+    opacity var(--duration-fast) var(--ease-out-ios);
+}
+
+.tab:active {
+  opacity: 0.5;
 }
 
 .tabActive {
@@ -39,7 +56,7 @@
 .label {
   font-size: 10px;
   font-weight: 500;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
 }
 
 .badge {
@@ -49,6 +66,6 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--red);
   border: 1.5px solid var(--bar-background-solid);
 }

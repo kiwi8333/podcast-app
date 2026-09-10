@@ -91,7 +91,7 @@ export default function PodcastPage() {
     <div>
       <div className={styles.header}>
         {feed.image && (
-          <img src={feed.image} alt="" width={80} height={80} className={styles.artwork} />
+          <img src={feed.image} alt="" width={132} height={132} className={styles.artwork} />
         )}
         <div className={styles.meta}>
           <h1 className={styles.title}>{feed.title}</h1>

@@ -1,39 +1,58 @@
+/* A list row rather than a bordered card. The separator is inset to the
+   text, and the whole row highlights on press the way a table view cell
+   does — no hover lift, which is a pointer idiom a phone never sees. */
 .card {
+  position: relative;
   display: flex;
   gap: var(--space-3);
   align-items: center;
-  padding: var(--space-3);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  padding: var(--space-2) 0;
+  min-height: 68px;
   color: inherit;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: background var(--duration-fast) var(--ease-out-ios);
 }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+.card::after {
+  content: "";
+  position: absolute;
+  left: calc(56px + var(--space-3));
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--separator);
+  transform: scaleY(0.5);
+  transform-origin: bottom;
+}
+
+.card:last-child::after {
+  display: none;
 }
 
 .card:active {
-  transform: translateY(0) scale(0.99);
+  /* Bleeds past the content padding so the highlight reaches the screen
+     edges, as a selected row does. */
+  background: var(--fill-quaternary);
+  box-shadow: -16px 0 0 var(--fill-quaternary), 16px 0 0 var(--fill-quaternary);
 }
 
 .artwork {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   border-radius: var(--radius-sm);
   object-fit: cover;
   flex-shrink: 0;
+  box-shadow: 0 0 0 0.5px var(--separator);
 }
 
 .info {
   min-width: 0;
+  flex: 1;
 }
 
 .title {
-  font-weight: 600;
-  font-size: var(--font-size-md);
+  font-weight: 500;
+  font-size: var(--text-body);
+  letter-spacing: var(--tracking-body);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -51,9 +70,15 @@
 }
 
 .artist {
-  font-size: var(--font-size-sm);
-  color: var(--muted-text);
+  font-size: var(--text-footnote);
+  color: var(--secondary-label);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: var(--tertiary-label);
 }

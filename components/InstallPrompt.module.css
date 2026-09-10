@@ -1,12 +1,12 @@
+/* A filled card with no border, matching the other surfaces in the app. */
 .banner {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3);
   margin-bottom: var(--space-4);
-  border: 0.5px solid var(--border);
   border-radius: var(--radius-md);
-  background: var(--surface);
+  background: var(--fill-quaternary);
 }
 
 .icon {
@@ -27,13 +27,14 @@
 }
 
 .title {
-  font-size: var(--font-size-sm);
+  font-size: var(--text-subhead);
   font-weight: 600;
+  letter-spacing: var(--tracking-body);
 }
 
 .text {
-  font-size: var(--font-size-xs);
-  color: var(--muted-text);
+  font-size: var(--text-caption);
+  color: var(--secondary-label);
   margin-top: 2px;
   line-height: 1.4;
 }
@@ -46,20 +47,21 @@
 
 .install {
   flex-shrink: 0;
-  height: 32px;
+  height: 30px;
   padding: 0 var(--space-3);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-pill);
   background: var(--accent);
   color: var(--accent-foreground);
   font-family: inherit;
-  font-size: var(--font-size-sm);
+  font-size: var(--text-footnote);
   font-weight: 600;
   cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-spring);
 }
 
 .install:active {
-  transform: scale(0.96);
+  transform: scale(0.94);
 }
 
 .dismiss {
@@ -67,17 +69,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: transparent;
-  color: var(--muted-text);
+  color: var(--secondary-label);
   cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out-ios);
 }
 
-.dismiss:hover {
-  background: var(--border);
+.dismiss:active {
+  background: var(--fill-tertiary);
 }
 
 @media (max-width: 420px) {
