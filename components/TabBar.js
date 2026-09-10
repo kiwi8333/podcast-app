@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Home, Library, ArrowDownCircle } from "lucide-react";
+import { Home, Radio, Library, ArrowDownCircle } from "lucide-react";
 import styles from "./TabBar.module.css";
 
 const TABS = [
   { href: "/", label: "Home", Icon: Home },
+  { href: "/radio", label: "Radio", Icon: Radio },
   { href: "/favorites", label: "Library", Icon: Library, badgeKey: "hasNewEpisodes" },
   { href: "/downloads", label: "Downloads", Icon: ArrowDownCircle },
 ];

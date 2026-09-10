@@ -6,6 +6,7 @@ import styles from "./ScreenHeader.module.css";
 // with a back chevron, the way a UINavigationController presents them.
 const TITLES = {
   "/": "Podcasts",
+  "/radio": "Radio",
   "/favorites": "Library",
   "/downloads": "Downloads",
 };

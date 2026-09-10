@@ -46,6 +46,10 @@ export function PlayerProvider({ children }) {
     function handleTimeUpdate() {
       setCurrentTime(audio.currentTime);
       const playing = nowPlayingRef.current;
+      // A live stream has no position worth resuming from. Saving one would
+      // file every station tapped into Continue Listening and spend the
+      // progress record's 300-entry budget on entries nothing can use.
+      if (playing?.isLive) return;
       if (playing && audio.currentTime - lastSavedRef.current >= PROGRESS_SAVE_INTERVAL) {
         lastSavedRef.current = audio.currentTime;
         setProgress(playing.audioUrl, {
@@ -61,7 +65,9 @@ export function PlayerProvider({ children }) {
     function handleLoadedMetadata() {
       setDuration(audio.duration || 0);
       const playing = nowPlayingRef.current;
-      if (playing) {
+      // duration is Infinity on a live stream, so the 95% test below would
+      // pass for any saved position and then seek a stream that cannot seek.
+      if (playing && !playing.isLive) {
         const saved = getProgress(playing.audioUrl);
         if (saved?.position && saved.position < audio.duration * 0.95) {
           audio.currentTime = saved.position;
@@ -81,6 +87,10 @@ export function PlayerProvider({ children }) {
     function handleEnded() {
       setIsPlaying(false);
       const playing = nowPlayingRef.current;
+      // "ended" on a live stream means the connection dropped, not that
+      // anything finished. Advancing into the podcast queue on a dropped
+      // stream would start an unrelated episode by itself.
+      if (playing?.isLive) return;
       if (playing) clearProgress(playing.audioUrl);
 
       const sleepAtEnd = sleepTargetRef.current === "end-of-episode";
@@ -121,14 +131,18 @@ export function PlayerProvider({ children }) {
     }
 
     let src = episode.audioUrl;
-    try {
-      const downloaded = await getDownload(episode.audioUrl);
-      if (downloaded) {
-        src = URL.createObjectURL(downloaded.blob);
-        objectUrlRef.current = src;
+    // Nothing live is ever in the downloads store, so this lookup would
+    // always miss — and it sits directly in front of starting playback.
+    if (!episode.isLive) {
+      try {
+        const downloaded = await getDownload(episode.audioUrl);
+        if (downloaded) {
+          src = URL.createObjectURL(downloaded.blob);
+          objectUrlRef.current = src;
+        }
+      } catch {
+        // IndexedDB unavailable — fall back to streaming from the network
       }
-    } catch {
-      // IndexedDB unavailable — fall back to streaming from the network
     }
 
     updateNowPlaying({ ...episode, src });
@@ -148,6 +162,21 @@ export function PlayerProvider({ children }) {
   useEffect(() => {
     playEpisodeRef.current = playEpisode;
   });
+
+  // A station plays through the same path as an episode — same <audio>
+  // element, same controls — with isLive marking the branches that must not
+  // treat it as a recording.
+  const playStation = useCallback(
+    (station) =>
+      playEpisode({
+        audioUrl: station.streamUrl,
+        title: station.name,
+        podcastTitle: station.tags?.[0] ? `Live · ${station.tags[0]}` : "Live radio",
+        artwork: station.logo || null,
+        isLive: true,
+      }),
+    [playEpisode]
+  );
 
   const togglePlayPause = useCallback(() => {
     const audio = audioRef.current;
@@ -232,13 +261,19 @@ export function PlayerProvider({ children }) {
     });
     navigator.mediaSession.playbackState = isPlaying ? "playing" : "paused";
 
-    // Match the in-app buttons: 15s either way.
+    // Match the in-app buttons: 15s either way. Live gets play/pause only —
+    // putting scrub controls on the lock screen for something with no
+    // timeline leaves the user pressing buttons that cannot do anything.
     const handlers = [
       ["play", () => audioRef.current?.play().catch(() => {})],
       ["pause", () => audioRef.current?.pause()],
-      ["seekbackward", (d) => skip(-(d?.seekOffset || 15))],
-      ["seekforward", (d) => skip(d?.seekOffset || 15)],
-      ["seekto", (d) => seek(d?.seekTime ?? 0)],
+      ...(nowPlaying.isLive
+        ? []
+        : [
+            ["seekbackward", (d) => skip(-(d?.seekOffset || 15))],
+            ["seekforward", (d) => skip(d?.seekOffset || 15)],
+            ["seekto", (d) => seek(d?.seekTime ?? 0)],
+          ]),
     ];
     for (const [action, handler] of handlers) {
       // Not every browser implements every action; an unsupported one throws
@@ -291,6 +326,7 @@ export function PlayerProvider({ children }) {
       isPlaying,
       playbackRate,
       playEpisode,
+      playStation,
       togglePlayPause,
       seek,
       skip,
@@ -306,6 +342,7 @@ export function PlayerProvider({ children }) {
       isPlaying,
       playbackRate,
       playEpisode,
+      playStation,
       togglePlayPause,
       seek,
       skip,

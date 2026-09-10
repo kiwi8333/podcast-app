@@ -173,3 +173,34 @@
   border: none;
   cursor: pointer;
 }
+
+.liveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-sm);
+  /* Red rather than the app accent: this is a state indicator, not
+     something to tap, and the accent everywhere else means "control". */
+  background: #d70015;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .liveBadge {
+    background: #ff453a;
+    color: #1d1d1f;
+  }
+}
+
+.liveStatus {
+  font-size: var(--font-size-xs);
+  color: var(--muted-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -28,6 +28,30 @@ ANTHROPIC_API_KEY=sk-ant-...
 
 The rest of the app works without it — those features just won't respond.
 
+### Ghana radio
+
+The Radio tab lists live Ghanaian stations. There is no key or configuration
+to set — `/api/radio` reads the [Radio Browser](https://api.radio-browser.info)
+community directory server-side, caches the result at the edge for an hour and
+hands the app a cleaned list.
+
+Two filters do most of the work, and both matter:
+
+- **https only.** The app is served over https, so an `http://` stream is
+  blocked as mixed content and fails silently. Those entries are dropped
+  rather than listed and left unplayable. It costs about one entry in seven.
+- **`lastcheckok`.** The directory probes stations periodically; entries
+  failing that probe have usually moved or shut down.
+
+What is left is sorted by votes and de-duplicated, since the same station is
+often submitted more than once under different casing. The directory is
+community-edited, so a few entries are mislabelled or not Ghanaian — the vote
+ordering keeps them well down the list.
+
+Stations play through the normal player, marked `isLive`, which is what
+suppresses resume-position saving, the scrubber, the speed control and
+queue auto-advance for something with no timeline.
+
 ### New-episode notifications (optional)
 
 Web push needs a few more variables, plus a deployment that can run the
